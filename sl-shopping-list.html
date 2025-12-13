@@ -339,6 +339,139 @@
             line-height: 1.5;
         }
 
+        .item-meta {
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .creator-name {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #e8eaff;
+            color: #667eea;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #f0f0f0;
+            color: #555;
+            border-radius: 12px;
+            font-size: 0.85em;
+        }
+
+        .dates-info {
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .dates-info div {
+            margin-bottom: 4px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 12px;
+            padding: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .nav-tab:hover {
+            background: #f9f9f9;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .search-stats {
+            text-align: center;
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
         .item-actions {
             display: flex;
             gap: 10px;
@@ -390,12 +523,44 @@
             <p class="subtitle">Track your wishlist, shopping list & inventory</p>
         </header>
 
-        <div class="add-item-section">
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-page="shopping">🛒 Shopping</button>
+            <button class="nav-tab" data-page="inventory">📦 Inventory Database</button>
+        </div>
+
+        <!-- Shopping Page -->
+        <div id="shopping-page" class="page active">
+            <div class="add-item-section">
             <h2 style="margin-bottom: 20px; color: #333;">Add New Item</h2>
             
             <div class="form-group">
-                <label for="saleName">Sale/Event Name *</label>
-                <input type="text" id="saleName" placeholder="e.g., Black Friday Sale, New Release, Mainstore Event" required>
+                <label for="saleName">Item/Sale Name *</label>
+                <input type="text" id="saleName" placeholder="e.g., Winter Wonderland Backdrop, Gothic Dress" required>
+            </div>
+
+            <div class="form-group">
+                <label for="creatorName">Store/Creator Name</label>
+                <input type="text" id="creatorName" placeholder="e.g., Truth Hair, Blueberry, The Arcade">
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                    <option value="">Select a category (optional)</option>
+                    <option value="animations">Animations</option>
+                    <option value="body-parts">Body Parts</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="creator-tools">Creator Tools</option>
+                    <option value="eep-windlights">EEP/Windlights</option>
+                    <option value="food-drink">Food & Drink</option>
+                    <option value="home-garden">Home & Garden</option>
+                    <option value="photography-tools">Photography Tools</option>
+                    <option value="backdrops">Backdrops</option>
+                    <option value="textures-materials">Textures / Materials</option>
+                    <option value="toys">Toys</option>
+                    <option value="weapons">Weapons</option>
+                    <option value="vehicles">Vehicles</option>
+                </select>
             </div>
 
             <div class="form-group">
@@ -406,6 +571,12 @@
                     <option value="purchased">✅ Purchased - Waiting for delivery</option>
                     <option value="inventory">📦 In Inventory - Owned</option>
                 </select>
+            </div>
+
+            <div class="form-group">
+                <label for="tags">Tags (comma-separated)</label>
+                <input type="text" id="tags" placeholder="e.g., winter, fantasy, formal, mesh, #sale">
+                <small style="color: #666; font-size: 0.9em;">Add tags to help you find items later. Separate with commas.</small>
             </div>
 
             <div class="form-group">
@@ -449,11 +620,85 @@
         </div>
 
         <div id="itemsContainer"></div>
+        </div>
+
+        <!-- Inventory Database Page -->
+        <div id="inventory-page" class="page">
+            <div class="search-section">
+                <h2 style="margin-bottom: 20px; color: #333;">🔍 Search Your Inventory</h2>
+                
+                <input type="text" id="searchInput" class="search-input" placeholder="Search by name, creator, tags, or notes...">
+                
+                <div class="search-filters">
+                    <select id="filterCategory" class="filter-select">
+                        <option value="">All Categories</option>
+                        <option value="animations">Animations</option>
+                        <option value="body-parts">Body Parts</option>
+                        <option value="clothing">Clothing</option>
+                        <option value="creator-tools">Creator Tools</option>
+                        <option value="eep-windlights">EEP/Windlights</option>
+                        <option value="food-drink">Food & Drink</option>
+                        <option value="home-garden">Home & Garden</option>
+                        <option value="photography-tools">Photography Tools</option>
+                        <option value="backdrops">Backdrops</option>
+                        <option value="textures-materials">Textures / Materials</option>
+                        <option value="toys">Toys</option>
+                        <option value="weapons">Weapons</option>
+                        <option value="vehicles">Vehicles</option>
+                    </select>
+                    
+                    <select id="filterCreator" class="filter-select">
+                        <option value="">All Creators</option>
+                    </select>
+                </div>
+                
+                <div class="search-stats" id="searchStats"></div>
+            </div>
+
+            <div id="inventoryContainer"></div>
+        </div>
     </div>
 
     <script>
         let currentImageData = null;
         let shoppingItems = [];
+
+        // Navigation tabs
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const page = tab.dataset.page;
+                
+                // Update active tab
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show correct page
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById(page + '-page').classList.add('active');
+                
+                // Render inventory if switching to that page
+                if (page === 'inventory') {
+                    renderInventory();
+                }
+            });
+        });
+
+        // Update creator filter dropdown
+        function updateCreatorFilter() {
+            const creators = [...new Set(shoppingItems
+                .filter(item => item.creatorName)
+                .map(item => item.creatorName))].sort();
+            
+            const filterSelect = document.getElementById('filterCreator');
+            const currentValue = filterSelect.value;
+            
+            filterSelect.innerHTML = '<option value="">All Creators</option>' +
+                creators.map(creator => `<option value="${escapeHtml(creator)}">${escapeHtml(creator)}</option>`).join('');
+            
+            if (creators.includes(currentValue)) {
+                filterSelect.value = currentValue;
+            }
+        }
 
         // Load items from storage on page load
         function loadItems() {
@@ -545,37 +790,51 @@
         // Add item functionality
         document.getElementById('addItemButton').addEventListener('click', () => {
             const saleName = document.getElementById('saleName').value.trim();
+            const creatorName = document.getElementById('creatorName').value.trim();
+            const category = document.getElementById('category').value;
             const mainStoreLink = document.getElementById('mainStoreLink').value.trim();
             const inWorldLink = document.getElementById('inWorldLink').value.trim();
             const itemStatus = document.getElementById('itemStatus').value;
             const notes = document.getElementById('notes').value.trim();
+            const tagsInput = document.getElementById('tags').value.trim();
+            const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(t => t) : [];
 
             if (!saleName) {
-                alert('Please enter a sale/event name');
+                alert('Please enter an item/sale name');
                 return;
             }
 
+            const now = new Date().toISOString();
             const newItem = {
                 id: Date.now(),
                 saleName,
+                creatorName,
+                category,
                 mainStoreLink,
                 inWorldLink,
                 image: currentImageData,
                 status: itemStatus,
                 notes: notes,
-                dateAdded: new Date().toISOString()
+                tags: tags,
+                dateAdded: now,
+                datePurchased: itemStatus === 'purchased' || itemStatus === 'inventory' ? now : null,
+                dateSorted: itemStatus === 'inventory' ? now : null
             };
 
             shoppingItems.unshift(newItem);
             saveItems();
             renderItems();
+            updateCreatorFilter();
 
             // Clear form
             document.getElementById('saleName').value = '';
+            document.getElementById('creatorName').value = '';
+            document.getElementById('category').value = '';
             document.getElementById('mainStoreLink').value = '';
             document.getElementById('inWorldLink').value = '';
             document.getElementById('itemStatus').value = 'shopping';
             document.getElementById('notes').value = '';
+            document.getElementById('tags').value = '';
             currentImageData = null;
             previewImage.src = '';
             previewContainer.classList.remove('active');
@@ -641,6 +900,31 @@
             return labels[currentStatus];
         }
 
+        function getCategoryName(category) {
+            const names = {
+                'animations': 'Animations',
+                'body-parts': 'Body Parts',
+                'clothing': 'Clothing',
+                'creator-tools': 'Creator Tools',
+                'eep-windlights': 'EEP/Windlights',
+                'food-drink': 'Food & Drink',
+                'home-garden': 'Home & Garden',
+                'photography-tools': 'Photography Tools',
+                'backdrops': 'Backdrops',
+                'textures-materials': 'Textures / Materials',
+                'toys': 'Toys',
+                'weapons': 'Weapons',
+                'vehicles': 'Vehicles'
+            };
+            return names[category] || category;
+        }
+
+        function formatDate(isoDate) {
+            if (!isoDate) return 'N/A';
+            const date = new Date(isoDate);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
         function renderItems() {
             const container = document.getElementById('itemsContainer');
             
@@ -676,6 +960,22 @@
                             <div class="item-content">
                                 <span class="status-badge status-${item.status}">${getStatusLabel(item.status)}</span>
                                 <div class="item-sale-name">${escapeHtml(item.saleName)}</div>
+                                
+                                <div class="item-meta">
+                                    ${item.creatorName ? `
+                                        <div class="creator-name">👤 ${escapeHtml(item.creatorName)}</div>
+                                    ` : ''}
+                                    ${item.category ? `
+                                        <span class="category-badge">${getCategoryName(item.category)}</span>
+                                    ` : ''}
+                                </div>
+                                
+                                ${item.tags && item.tags.length > 0 ? `
+                                    <div class="tags-container">
+                                        ${item.tags.map(tag => `<span class="tag">#${escapeHtml(tag)}</span>`).join('')}
+                                    </div>
+                                ` : ''}
+                                
                                 ${item.notes ? `
                                     <div class="item-notes">${escapeHtml(item.notes)}</div>
                                 ` : ''}
@@ -693,6 +993,13 @@
                                         </div>
                                     ` : ''}
                                 </div>
+                                
+                                <div class="dates-info">
+                                    <div>📅 Added: ${formatDate(item.dateAdded)}</div>
+                                    ${item.datePurchased ? `<div>💳 Purchased: ${formatDate(item.datePurchased)}</div>` : ''}
+                                    ${item.dateSorted ? `<div>📦 Sorted: ${formatDate(item.dateSorted)}</div>` : ''}
+                                </div>
+                                
                                 <div class="item-actions">
                                     ${item.status !== 'inventory' ? `
                                         <button class="status-button" onclick="updateStatus(${item.id})">${getNextStatusLabel(item.status)}</button>
@@ -709,7 +1016,21 @@
         async function updateStatus(id) {
             const item = shoppingItems.find(i => i.id === id);
             if (item && item.status !== 'inventory') {
+                const oldStatus = item.status;
                 item.status = getNextStatus(item.status);
+                
+                // Track dates based on status change
+                const now = new Date().toISOString();
+                if (item.status === 'purchased' && !item.datePurchased) {
+                    item.datePurchased = now;
+                }
+                if (item.status === 'inventory') {
+                    if (!item.datePurchased) {
+                        item.datePurchased = now;
+                    }
+                    item.dateSorted = now;
+                }
+                
                 saveItems();
                 renderItems();
             }
@@ -720,7 +1041,136 @@
                 shoppingItems = shoppingItems.filter(item => item.id !== id);
                 saveItems();
                 renderItems();
+                updateCreatorFilter();
             }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Inventory Database Search
+        let searchTimeout;
+        const searchInput = document.getElementById('searchInput');
+        const filterCategory = document.getElementById('filterCategory');
+        const filterCreator = document.getElementById('filterCreator');
+
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(renderInventory, 300);
+        });
+
+        filterCategory.addEventListener('change', renderInventory);
+        filterCreator.addEventListener('change', renderInventory);
+
+        function renderInventory() {
+            const inventoryItems = shoppingItems.filter(item => item.status === 'inventory');
+            const searchTerm = searchInput.value.toLowerCase();
+            const categoryFilter = filterCategory.value;
+            const creatorFilter = filterCreator.value;
+
+            let filtered = inventoryItems.filter(item => {
+                // Text search across multiple fields
+                const matchesSearch = !searchTerm || 
+                    item.saleName.toLowerCase().includes(searchTerm) ||
+                    (item.creatorName && item.creatorName.toLowerCase().includes(searchTerm)) ||
+                    (item.notes && item.notes.toLowerCase().includes(searchTerm)) ||
+                    (item.tags && item.tags.some(tag => tag.toLowerCase().includes(searchTerm)));
+
+                // Category filter
+                const matchesCategory = !categoryFilter || item.category === categoryFilter;
+
+                // Creator filter
+                const matchesCreator = !creatorFilter || item.creatorName === creatorFilter;
+
+                return matchesSearch && matchesCategory && matchesCreator;
+            });
+
+            // Update stats
+            const statsEl = document.getElementById('searchStats');
+            statsEl.textContent = `Found ${filtered.length} item${filtered.length !== 1 ? 's' : ''} in your inventory`;
+
+            // Render results
+            const container = document.getElementById('inventoryContainer');
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📦</div>
+                        <div class="empty-state-text">
+                            ${inventoryItems.length === 0 
+                                ? 'No items in inventory yet. Add items and move them to inventory to build your database!' 
+                                : 'No items match your search criteria.'}
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="items-grid">
+                    ${filtered.map(item => `
+                        <div class="item-card">
+                            ${item.image ? `
+                                <img src="${item.image}" alt="${item.saleName}" class="item-image">
+                            ` : `
+                                <div class="item-image" style="display: flex; align-items: center; justify-content: center; font-size: 3em; color: #ccc;">
+                                    🖼️
+                                </div>
+                            `}
+                            <div class="item-content">
+                                <div class="item-sale-name">${escapeHtml(item.saleName)}</div>
+                                
+                                <div class="item-meta">
+                                    ${item.creatorName ? `
+                                        <div class="creator-name">👤 ${escapeHtml(item.creatorName)}</div>
+                                    ` : ''}
+                                    ${item.category ? `
+                                        <span class="category-badge">${getCategoryName(item.category)}</span>
+                                    ` : ''}
+                                </div>
+                                
+                                ${item.tags && item.tags.length > 0 ? `
+                                    <div class="tags-container">
+                                        ${item.tags.map(tag => `<span class="tag">#${escapeHtml(tag)}</span>`).join('')}
+                                    </div>
+                                ` : ''}
+                                
+                                ${item.notes ? `
+                                    <div class="item-notes">${escapeHtml(item.notes)}</div>
+                                ` : ''}
+                                
+                                <div class="item-links">
+                                    ${item.mainStoreLink ? `
+                                        <div class="link-item">
+                                            <span class="link-label">🏪 Store:</span>
+                                            <a href="${escapeHtml(item.mainStoreLink)}" target="_blank" class="link-url">${escapeHtml(item.mainStoreLink)}</a>
+                                        </div>
+                                    ` : ''}
+                                    ${item.inWorldLink ? `
+                                        <div class="link-item">
+                                            <span class="link-label">📍 In-World:</span>
+                                            <span class="link-url">${escapeHtml(item.inWorldLink)}</span>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                                
+                                <div class="dates-info">
+                                    <div>📅 Added: ${formatDate(item.dateAdded)}</div>
+                                    ${item.datePurchased ? `<div>💳 Purchased: ${formatDate(item.datePurchased)}</div>` : ''}
+                                    ${item.dateSorted ? `<div>📦 Sorted: ${formatDate(item.dateSorted)}</div>` : ''}
+                                </div>
+                                
+                                <div class="item-actions">
+                                    <button class="delete-button" onclick="deleteItem(${item.id})">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
         }
 
         function escapeHtml(text) {
@@ -731,6 +1181,7 @@
 
         // Load items when page loads
         loadItems();
+        updateCreatorFilter();
     </script>
 </body>
 </html>
