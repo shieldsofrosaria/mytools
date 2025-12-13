@@ -472,6 +472,108 @@
             margin-bottom: 20px;
         }
 
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            color: #333;
+            margin: 0;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2em;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .close-modal:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .save-button {
+            flex: 1;
+            padding: 15px;
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .save-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 184, 148, 0.4);
+        }
+
+        .cancel-button {
+            flex: 1;
+            padding: 15px;
+            background: #dfe6e9;
+            color: #2d3436;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .cancel-button:hover {
+            background: #b2bec3;
+        }
+
         .item-actions {
             display: flex;
             gap: 10px;
@@ -656,6 +758,86 @@
             </div>
 
             <div id="inventoryContainer"></div>
+        </div>
+
+        <!-- Edit Modal -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Edit Item</h2>
+                    <button class="close-modal" onclick="closeEditModal()">×</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="editSaleName">Item/Sale Name *</label>
+                    <input type="text" id="editSaleName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editCreatorName">Store/Creator Name</label>
+                    <input type="text" id="editCreatorName">
+                </div>
+
+                <div class="form-group">
+                    <label for="editCategory">Category</label>
+                    <select id="editCategory" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                        <option value="">Select a category (optional)</option>
+                        <option value="animations">Animations</option>
+                        <option value="body-parts">Body Parts</option>
+                        <option value="clothing">Clothing</option>
+                        <option value="creator-tools">Creator Tools</option>
+                        <option value="eep-windlights">EEP/Windlights</option>
+                        <option value="food-drink">Food & Drink</option>
+                        <option value="home-garden">Home & Garden</option>
+                        <option value="photography-tools">Photography Tools</option>
+                        <option value="backdrops">Backdrops</option>
+                        <option value="textures-materials">Textures / Materials</option>
+                        <option value="toys">Toys</option>
+                        <option value="weapons">Weapons</option>
+                        <option value="vehicles">Vehicles</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editItemStatus">Status *</label>
+                    <select id="editItemStatus" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                        <option value="wishlist">💭 Wishlist - Want to buy</option>
+                        <option value="shopping">🛒 Shopping List - Planning to buy</option>
+                        <option value="purchased">✅ Purchased - Waiting for delivery</option>
+                        <option value="inventory">📦 In Inventory - Owned</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editTags">Tags (comma-separated)</label>
+                    <input type="text" id="editTags" placeholder="e.g., winter, fantasy, formal, mesh, #sale">
+                </div>
+
+                <div class="form-group">
+                    <label for="editNotes">Notes</label>
+                    <textarea id="editNotes" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="editMainStoreLink">Main Store Link</label>
+                    <input type="url" id="editMainStoreLink">
+                </div>
+
+                <div class="form-group">
+                    <label for="editInWorldLink">In-World Landmark/SLURL</label>
+                    <input type="text" id="editInWorldLink">
+                </div>
+
+                <div class="form-group">
+                    <label>Current Image</label>
+                    <div id="editImagePreview"></div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="save-button" onclick="saveEdit()">💾 Save Changes</button>
+                    <button class="cancel-button" onclick="closeEditModal()">Cancel</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1004,6 +1186,7 @@
                                     ${item.status !== 'inventory' ? `
                                         <button class="status-button" onclick="updateStatus(${item.id})">${getNextStatusLabel(item.status)}</button>
                                     ` : ''}
+                                    <button class="status-button" onclick="editItem(${item.id})">Edit</button>
                                     <button class="delete-button" onclick="deleteItem(${item.id})">Delete</button>
                                 </div>
                             </div>
@@ -1041,9 +1224,96 @@
                 shoppingItems = shoppingItems.filter(item => item.id !== id);
                 saveItems();
                 renderItems();
+                renderInventory();
                 updateCreatorFilter();
             }
         }
+
+        // Edit functionality
+        let editingItemId = null;
+
+        function editItem(id) {
+            const item = shoppingItems.find(i => i.id === id);
+            if (!item) return;
+
+            editingItemId = id;
+
+            // Populate form
+            document.getElementById('editSaleName').value = item.saleName || '';
+            document.getElementById('editCreatorName').value = item.creatorName || '';
+            document.getElementById('editCategory').value = item.category || '';
+            document.getElementById('editItemStatus').value = item.status || 'shopping';
+            document.getElementById('editTags').value = item.tags ? item.tags.join(', ') : '';
+            document.getElementById('editNotes').value = item.notes || '';
+            document.getElementById('editMainStoreLink').value = item.mainStoreLink || '';
+            document.getElementById('editInWorldLink').value = item.inWorldLink || '';
+
+            // Show image preview if exists
+            const previewDiv = document.getElementById('editImagePreview');
+            if (item.image) {
+                previewDiv.innerHTML = `<img src="${item.image}" style="max-width: 100%; max-height: 200px; border-radius: 8px;">`;
+            } else {
+                previewDiv.innerHTML = '<p style="color: #999;">No image</p>';
+            }
+
+            // Show modal
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+            editingItemId = null;
+        }
+
+        function saveEdit() {
+            const item = shoppingItems.find(i => i.id === editingItemId);
+            if (!item) return;
+
+            const oldStatus = item.status;
+            const newStatus = document.getElementById('editItemStatus').value;
+
+            // Update item
+            item.saleName = document.getElementById('editSaleName').value.trim();
+            item.creatorName = document.getElementById('editCreatorName').value.trim();
+            item.category = document.getElementById('editCategory').value;
+            item.status = newStatus;
+            
+            const tagsInput = document.getElementById('editTags').value.trim();
+            item.tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(t => t) : [];
+            
+            item.notes = document.getElementById('editNotes').value.trim();
+            item.mainStoreLink = document.getElementById('editMainStoreLink').value.trim();
+            item.inWorldLink = document.getElementById('editInWorldLink').value.trim();
+
+            // Update dates if status changed
+            const now = new Date().toISOString();
+            if (oldStatus !== newStatus) {
+                if (newStatus === 'purchased' && !item.datePurchased) {
+                    item.datePurchased = now;
+                }
+                if (newStatus === 'inventory') {
+                    if (!item.datePurchased) {
+                        item.datePurchased = now;
+                    }
+                    if (!item.dateSorted) {
+                        item.dateSorted = now;
+                    }
+                }
+            }
+
+            saveItems();
+            renderItems();
+            renderInventory();
+            updateCreatorFilter();
+            closeEditModal();
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('editModal').addEventListener('click', (e) => {
+            if (e.target.id === 'editModal') {
+                closeEditModal();
+            }
+        });
 
         function escapeHtml(text) {
             const div = document.createElement('div');
@@ -1164,6 +1434,7 @@
                                 </div>
                                 
                                 <div class="item-actions">
+                                    <button class="status-button" onclick="editItem(${item.id})">Edit</button>
                                     <button class="delete-button" onclick="deleteItem(${item.id})">Delete</button>
                                 </div>
                             </div>
