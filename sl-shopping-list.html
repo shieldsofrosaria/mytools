@@ -1136,7 +1136,13 @@
                     
                     if (Array.isArray(loadedData)) {
                         shoppingItems = loadedData;
-                        // Don't save to localStorage here - it will happen on next save
+                        // Save to localStorage but DON'T sync back to GitHub (would be redundant)
+                        const itemsWithoutImages = shoppingItems.map(item => ({
+                            ...item,
+                            image: null
+                        }));
+                        localStorage.setItem('sl-shopping-items', JSON.stringify(itemsWithoutImages));
+                        
                         renderItems();
                         renderInventory();
                         updateCreatorFilter();
@@ -1153,10 +1159,12 @@
                     if (showStatus) {
                         showGitHubStatus('No data file found on GitHub. Your next save will create it.', 'info');
                     }
+                    // Don't throw error for 404 - it's expected for new setups
                 } else {
                     if (showStatus) {
                         showGitHubStatus(`❌ Failed to load: ${response.statusText}`, 'error');
                     }
+                    throw new Error(response.statusText);
                 }
             } catch (error) {
                 if (showStatus) {
@@ -1313,7 +1321,7 @@
                 // If using GitHub, automatically load from there on startup
                 // This ensures we get the full data with images
                 if (useGitHub) {
-                    syncFromGitHub().then(() => {
+                    syncFromGitHub(false).then(() => {
                         console.log('Loaded data from GitHub');
                     }).catch(err => {
                         console.log('Using localStorage data, GitHub sync will happen on save');
@@ -1325,12 +1333,13 @@
         }
 
         // Save items to storage
-        function saveItems() {
+        // Added parameter to control whether this is a user action or automatic
+        function saveItems(isUserAction = true) {
             try {
                 const dataString = JSON.stringify(shoppingItems);
                 
-                // If using GitHub, save full data there
-                if (useGitHub) {
+                // If using GitHub, save full data there (but only on user actions)
+                if (useGitHub && isUserAction) {
                     syncToGitHub().catch(err => {
                         console.error('GitHub sync error:', err);
                         // Silently log error, don't bother user
@@ -1342,7 +1351,7 @@
                         image: null // Strip images from localStorage copy
                     }));
                     localStorage.setItem('sl-shopping-items', JSON.stringify(itemsWithoutImages));
-                } else {
+                } else if (!useGitHub) {
                     // Not using GitHub - save everything to localStorage
                     localStorage.setItem('sl-shopping-items', dataString);
                     
