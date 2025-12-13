@@ -456,11 +456,11 @@
         let shoppingItems = [];
 
         // Load items from storage on page load
-        async function loadItems() {
+        function loadItems() {
             try {
-                const result = await window.storage.get('sl-shopping-items');
-                if (result && result.value) {
-                    shoppingItems = JSON.parse(result.value);
+                const saved = localStorage.getItem('sl-shopping-items');
+                if (saved) {
+                    shoppingItems = JSON.parse(saved);
                     renderItems();
                 }
             } catch (error) {
@@ -469,9 +469,9 @@
         }
 
         // Save items to storage
-        async function saveItems() {
+        function saveItems() {
             try {
-                await window.storage.set('sl-shopping-items', JSON.stringify(shoppingItems));
+                localStorage.setItem('sl-shopping-items', JSON.stringify(shoppingItems));
             } catch (error) {
                 console.error('Error saving items:', error);
                 alert('Failed to save items. Your data may not persist.');
@@ -543,7 +543,7 @@
         });
 
         // Add item functionality
-        document.getElementById('addItemButton').addEventListener('click', async () => {
+        document.getElementById('addItemButton').addEventListener('click', () => {
             const saleName = document.getElementById('saleName').value.trim();
             const mainStoreLink = document.getElementById('mainStoreLink').value.trim();
             const inWorldLink = document.getElementById('inWorldLink').value.trim();
@@ -567,7 +567,7 @@
             };
 
             shoppingItems.unshift(newItem);
-            await saveItems();
+            saveItems();
             renderItems();
 
             // Clear form
@@ -710,7 +710,7 @@
             const item = shoppingItems.find(i => i.id === id);
             if (item && item.status !== 'inventory') {
                 item.status = getNextStatus(item.status);
-                await saveItems();
+                saveItems();
                 renderItems();
             }
         }
@@ -718,7 +718,7 @@
         async function deleteItem(id) {
             if (confirm('Are you sure you want to delete this item?')) {
                 shoppingItems = shoppingItems.filter(item => item.id !== id);
-                await saveItems();
+                saveItems();
                 renderItems();
             }
         }
