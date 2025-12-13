@@ -928,6 +928,15 @@
                 <div class="form-group">
                     <label>Current Image</label>
                     <div id="editImagePreview"></div>
+                    <div style="margin-top: 10px;">
+                        <input type="file" id="editImageInput" accept="image/*" style="display: none;">
+                        <button type="button" onclick="document.getElementById('editImageInput').click()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; margin-right: 10px;">
+                            📷 Upload New Image
+                        </button>
+                        <button type="button" id="removeEditImage" style="padding: 10px 20px; background: #ff4444; color: white; border: none; border-radius: 6px; cursor: pointer; display: none;">
+                            Remove Image
+                        </button>
+                    </div>
                 </div>
 
                 <div class="modal-actions">
@@ -1708,12 +1717,47 @@
 
         // Edit functionality
         let editingItemId = null;
+        let editImageData = null;
+
+        // Edit image upload handler
+        document.getElementById('editImageInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                // If using GitHub, allow larger images since storage is unlimited
+                // If not using GitHub, keep the 500KB limit for localStorage
+                if (!useGitHub) {
+                    const maxSize = 500 * 1024; // 500KB
+                    if (file.size > maxSize) {
+                        alert('Image is too large! Please use an image smaller than 500KB.\n\nTip: Set up GitHub storage in Settings (⚙️) for unlimited image sizes!');
+                        return;
+                    }
+                }
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    editImageData = event.target.result;
+                    document.getElementById('editImagePreview').innerHTML = 
+                        `<img src="${editImageData}" style="max-width: 100%; max-height: 200px; border-radius: 8px;">`;
+                    document.getElementById('removeEditImage').style.display = 'inline-block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Remove edit image button
+        document.getElementById('removeEditImage').addEventListener('click', () => {
+            editImageData = null;
+            document.getElementById('editImagePreview').innerHTML = '<p style="color: #999;">No image</p>';
+            document.getElementById('removeEditImage').style.display = 'none';
+            document.getElementById('editImageInput').value = '';
+        });
 
         function editItem(id) {
             const item = shoppingItems.find(i => i.id === id);
             if (!item) return;
 
             editingItemId = id;
+            editImageData = item.image; // Set current image data
 
             // Populate form
             document.getElementById('editSaleName').value = item.saleName || '';
@@ -1727,10 +1771,13 @@
 
             // Show image preview if exists
             const previewDiv = document.getElementById('editImagePreview');
+            const removeBtn = document.getElementById('removeEditImage');
             if (item.image) {
                 previewDiv.innerHTML = `<img src="${item.image}" style="max-width: 100%; max-height: 200px; border-radius: 8px;">`;
+                removeBtn.style.display = 'inline-block';
             } else {
                 previewDiv.innerHTML = '<p style="color: #999;">No image</p>';
+                removeBtn.style.display = 'none';
             }
 
             // Show modal
@@ -1740,6 +1787,8 @@
         function closeEditModal() {
             document.getElementById('editModal').classList.remove('active');
             editingItemId = null;
+            editImageData = null;
+            document.getElementById('editImageInput').value = '';
         }
 
         function saveEdit() {
@@ -1761,6 +1810,9 @@
             item.notes = document.getElementById('editNotes').value.trim();
             item.mainStoreLink = document.getElementById('editMainStoreLink').value.trim();
             item.inWorldLink = document.getElementById('editInWorldLink').value.trim();
+            
+            // Update image (this allows adding/removing/changing images)
+            item.image = editImageData;
 
             // Update dates if status changed
             const now = new Date().toISOString();
