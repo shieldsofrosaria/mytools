@@ -845,13 +845,13 @@
                 </div>
 
                 <div style="background: #e8eaff; padding: 20px; border-radius: 8px; border-left: 4px solid #667eea;">
-                    <h3 style="color: #667eea; margin-top: 0;">💡 Tips to Reduce Storage Usage</h3>
+                    <h3 style="color: #667eea; margin-top: 0;">💡 Storage Tips</h3>
                     <ul style="margin: 10px 0; padding-left: 20px; color: #666;">
-                        <li>Use smaller images (under 500KB each)</li>
-                        <li>Compress images before uploading</li>
-                        <li>Delete old items you no longer need</li>
+                        <li><strong>With GitHub storage:</strong> Unlimited images, no size limits!</li>
+                        <li><strong>Without GitHub:</strong> Keep images under 500KB each</li>
                         <li>Export and backup data regularly</li>
-                        <li>Consider removing images from old inventory items</li>
+                        <li>Delete old items you no longer need</li>
+                        <li>GitHub storage = full-resolution images preserved forever</li>
                     </ul>
                 </div>
             </div>
@@ -1097,13 +1097,17 @@
             }
         }
 
-        async function syncFromGitHub() {
+        async function syncFromGitHub(showStatus = true) {
             if (!githubConfig.token || !githubConfig.repo) {
-                showGitHubStatus('Please save GitHub settings first', 'error');
+                if (showStatus) {
+                    showGitHubStatus('Please save GitHub settings first', 'error');
+                }
                 return;
             }
             
-            showGitHubStatus('Loading from GitHub...', 'info');
+            if (showStatus) {
+                showGitHubStatus('Loading from GitHub...', 'info');
+            }
             
             try {
                 const response = await fetch(
@@ -1123,22 +1127,33 @@
                     
                     if (Array.isArray(loadedData)) {
                         shoppingItems = loadedData;
-                        localStorage.setItem('sl-shopping-items', JSON.stringify(shoppingItems));
+                        // Don't save to localStorage here - it will happen on next save
                         renderItems();
                         renderInventory();
                         updateCreatorFilter();
                         updateStorageInfo();
-                        showGitHubStatus(`✅ Loaded ${shoppingItems.length} items from GitHub!`, 'success');
+                        if (showStatus) {
+                            showGitHubStatus(`✅ Loaded ${shoppingItems.length} items from GitHub!`, 'success');
+                        }
                     } else {
-                        showGitHubStatus('❌ Invalid data format in GitHub file', 'error');
+                        if (showStatus) {
+                            showGitHubStatus('❌ Invalid data format in GitHub file', 'error');
+                        }
                     }
                 } else if (response.status === 404) {
-                    showGitHubStatus('No data file found on GitHub. Your next save will create it.', 'info');
+                    if (showStatus) {
+                        showGitHubStatus('No data file found on GitHub. Your next save will create it.', 'info');
+                    }
                 } else {
-                    showGitHubStatus(`❌ Failed to load: ${response.statusText}`, 'error');
+                    if (showStatus) {
+                        showGitHubStatus(`❌ Failed to load: ${response.statusText}`, 'error');
+                    }
                 }
             } catch (error) {
-                showGitHubStatus('❌ Error loading from GitHub: ' + error.message, 'error');
+                if (showStatus) {
+                    showGitHubStatus('❌ Error loading from GitHub: ' + error.message, 'error');
+                }
+                throw error;
             }
         }
 
@@ -1285,6 +1300,16 @@
                     shoppingItems = JSON.parse(saved);
                     renderItems();
                 }
+                
+                // If using GitHub, automatically load from there on startup
+                // This ensures we get the full data with images
+                if (useGitHub) {
+                    syncFromGitHub().then(() => {
+                        console.log('Loaded data from GitHub');
+                    }).catch(err => {
+                        console.log('Using localStorage data, GitHub sync will happen on save');
+                    });
+                }
             } catch (error) {
                 console.log('No saved items found or error loading:', error);
             }
@@ -1295,32 +1320,51 @@
             try {
                 const dataString = JSON.stringify(shoppingItems);
                 
-                // Always save to localStorage as backup
-                localStorage.setItem('sl-shopping-items', dataString);
-                
-                // Also sync to GitHub if configured
+                // If using GitHub, save full data there
                 if (useGitHub) {
                     syncToGitHub().catch(err => {
                         console.error('GitHub sync error:', err);
-                        // Don't block the save if GitHub fails
+                        // Silently log error, don't bother user
                     });
-                }
-                
-                // Check size for localStorage warning
-                const sizeMB = new Blob([dataString]).size / (1024 * 1024);
-                if (sizeMB > 4 && !useGitHub) {
-                    alert('Warning: You\'re approaching localStorage limits (' + sizeMB.toFixed(2) + 'MB used). Consider setting up GitHub storage in Settings for unlimited space!');
+                    
+                    // For localStorage, save without images to save space
+                    const itemsWithoutImages = shoppingItems.map(item => ({
+                        ...item,
+                        image: null // Strip images from localStorage copy
+                    }));
+                    localStorage.setItem('sl-shopping-items', JSON.stringify(itemsWithoutImages));
+                } else {
+                    // Not using GitHub - save everything to localStorage
+                    localStorage.setItem('sl-shopping-items', dataString);
+                    
+                    // Only warn about size if NOT using GitHub
+                    const sizeMB = new Blob([dataString]).size / (1024 * 1024);
+                    if (sizeMB > 4) {
+                        console.warn('Approaching localStorage limits:', sizeMB.toFixed(2) + 'MB');
+                        // Show setup prompt only once
+                        if (!localStorage.getItem('github-setup-prompted')) {
+                            if (confirm('You\'re approaching storage limits (' + sizeMB.toFixed(2) + 'MB used).\n\nWould you like to set up GitHub storage for unlimited space?')) {
+                                // Switch to settings tab
+                                document.querySelector('[data-page="settings"]').click();
+                            }
+                            localStorage.setItem('github-setup-prompted', 'true');
+                        }
+                    }
                 }
                 
             } catch (error) {
                 console.error('Error saving items:', error);
                 
                 if (error.name === 'QuotaExceededError') {
-                    alert('Storage limit exceeded! Your data cannot be saved to localStorage.\n\n' + 
-                          (useGitHub ? 'Data will still be saved to GitHub.' : 'Please set up GitHub storage in Settings for unlimited space!') +
-                          '\n\nOr try:\n1. Delete some old items\n2. Remove images from items\n3. Use smaller image files');
+                    if (useGitHub) {
+                        // Just silently continue - GitHub has the data
+                        console.log('localStorage quota exceeded but GitHub has the data');
+                    } else {
+                        // Only show error if not using GitHub
+                        alert('Storage limit exceeded!\n\nPlease set up GitHub storage in Settings (⚙️ tab) for unlimited space.');
+                    }
                 } else {
-                    alert('Failed to save items: ' + error.message);
+                    console.error('Save error:', error.message);
                 }
                 
                 return false;
@@ -1375,11 +1419,14 @@
         });
 
         function handleImageFile(file) {
-            // Check file size (limit to 500KB for localStorage safety)
-            const maxSize = 500 * 1024; // 500KB
-            if (file.size > maxSize) {
-                alert('Image is too large! Please use an image smaller than 500KB to ensure data saves properly. Try compressing the image first.');
-                return;
+            // If using GitHub, allow larger images since storage is unlimited
+            // If not using GitHub, keep the 500KB limit for localStorage
+            if (!useGitHub) {
+                const maxSize = 500 * 1024; // 500KB
+                if (file.size > maxSize) {
+                    alert('Image is too large! Please use an image smaller than 500KB.\n\nTip: Set up GitHub storage in Settings (⚙️) for unlimited image sizes!');
+                    return;
+                }
             }
 
             const reader = new FileReader();
