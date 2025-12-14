@@ -1332,25 +1332,31 @@
         }
 
         // Load items from storage on page load
-        function loadItems() {
+        async function loadItems() {
             try {
+                // If using GitHub, load from there FIRST (has images)
+                if (useGitHub) {
+                    console.log('GitHub enabled - loading from GitHub...');
+                    try {
+                        await syncFromGitHub(false);
+                        console.log('Successfully loaded from GitHub');
+                        return; // Don't load from localStorage if GitHub worked
+                    } catch (err) {
+                        console.log('GitHub load failed, falling back to localStorage:', err);
+                    }
+                }
+                
+                // Fallback to localStorage (either no GitHub or GitHub failed)
                 const saved = localStorage.getItem('sl-shopping-items');
                 if (saved) {
                     shoppingItems = JSON.parse(saved);
                     renderItems();
-                }
-                
-                // If using GitHub, automatically load from there on startup
-                // This ensures we get the full data with images
-                if (useGitHub) {
-                    syncFromGitHub(false).then(() => {
-                        console.log('Loaded data from GitHub');
-                    }).catch(err => {
-                        console.log('Using localStorage data, GitHub sync will happen on save');
-                    });
+                    console.log('Loaded from localStorage');
+                } else {
+                    console.log('No data found in localStorage');
                 }
             } catch (error) {
-                console.log('No saved items found or error loading:', error);
+                console.log('Error loading items:', error);
             }
         }
 
@@ -1672,7 +1678,13 @@
 
             container.innerHTML = `
                 <div class="items-grid">
-                    ${filteredItems.map(item => `
+                    ${filteredItems.map(item => {
+                        console.log('Rendering item:', {
+                            name: item.saleName,
+                            hasImage: !!item.image,
+                            imageStart: item.image ? item.image.substring(0, 50) : 'none'
+                        });
+                        return `
                         <div class="item-card">
                             ${item.image ? `
                                 <img src="${item.image}" alt="${item.saleName}" class="item-image">
@@ -2037,7 +2049,7 @@
 
         // Load items when page loads
         loadGitHubConfig();
-        loadItems();
+        loadItems(); // Now async but we don't need to await it
         updateCreatorFilter();
     </script>
 </body>
