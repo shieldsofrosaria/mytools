@@ -1307,31 +1307,25 @@
         // Load items from storage on page load
         function loadItems() {
             try {
-                // If using GitHub, load from there FIRST (has images)
+                // Always check localStorage first for instant load
+                const saved = localStorage.getItem('sl-shopping-items');
+                if (saved) {
+                    shoppingItems = JSON.parse(saved);
+                    renderItems();
+                    console.log('Loaded from localStorage');
+                }
+                
+                // If using GitHub, also sync from there in background to get latest
+                // This ensures we have the most recent data across devices
                 if (useGitHub) {
-                    console.log('GitHub enabled - loading from GitHub...');
+                    console.log('Syncing with GitHub in background...');
                     syncFromGitHub(false).then(() => {
-                        console.log('Successfully loaded from GitHub with images');
+                        console.log('GitHub sync complete');
                     }).catch(err => {
-                        console.log('GitHub load failed, trying localStorage:', err);
-                        // Fallback to localStorage
-                        const saved = localStorage.getItem('sl-shopping-items');
-                        if (saved) {
-                            shoppingItems = JSON.parse(saved);
-                            renderItems();
-                            console.log('Loaded from localStorage (fallback)');
-                        }
+                        console.log('GitHub sync failed, using localStorage:', err);
                     });
-                } else {
-                    // Not using GitHub - just load from localStorage
-                    const saved = localStorage.getItem('sl-shopping-items');
-                    if (saved) {
-                        shoppingItems = JSON.parse(saved);
-                        renderItems();
-                        console.log('Loaded from localStorage');
-                    } else {
-                        console.log('No data found');
-                    }
+                } else if (!saved) {
+                    console.log('No data found');
                 }
             } catch (error) {
                 console.log('Error loading items:', error);
@@ -1344,19 +1338,27 @@
             try {
                 const dataString = JSON.stringify(shoppingItems);
                 
-                // If using GitHub, save full data there (but only on user actions)
-                if (useGitHub && isUserAction) {
-                    syncToGitHub().catch(err => {
-                        console.error('GitHub sync error:', err);
-                    });
+                // ALWAYS save to localStorage immediately for instant reload
+                // This gives us optimistic updates while GitHub syncs
+                if (useGitHub) {
+                    // Save full data to localStorage temporarily for instant reload
+                    localStorage.setItem('sl-shopping-items', dataString);
                     
-                    // For localStorage, save without images to save space
-                    const itemsWithoutImages = shoppingItems.map(item => ({
-                        ...item,
-                        image: null
-                    }));
-                    localStorage.setItem('sl-shopping-items', JSON.stringify(itemsWithoutImages));
-                } else if (!useGitHub) {
+                    // Then sync to GitHub in background (only on user actions)
+                    if (isUserAction) {
+                        syncToGitHub().then(() => {
+                            // After GitHub sync succeeds, we can strip images from localStorage
+                            const itemsWithoutImages = shoppingItems.map(item => ({
+                                ...item,
+                                image: null
+                            }));
+                            localStorage.setItem('sl-shopping-items', JSON.stringify(itemsWithoutImages));
+                        }).catch(err => {
+                            console.error('GitHub sync error:', err);
+                            // Keep full data in localStorage if GitHub fails
+                        });
+                    }
+                } else {
                     // Not using GitHub - save everything to localStorage
                     localStorage.setItem('sl-shopping-items', dataString);
                     
