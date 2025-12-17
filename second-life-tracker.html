@@ -965,11 +965,12 @@
                     const db = firebase.firestore();
                     
                     // First, do a one-time get to check if cloud data exists
+                    let isFirstLoad = true;
                     db.collection('users').doc(authUser.uid).get().then(doc => {
                         if (doc.exists && doc.data().items && doc.data().items.length > 0) {
                             console.log('[Firestore] Found', doc.data().items.length, 'items in cloud, loading...');
-                            isLoadingFromCloud.current = true;
                             setItems(doc.data().items);
+                            isFirstLoad = false;
                         } else {
                             console.log('[Firestore] No cloud data found');
                             // Push current localStorage items to Firestore if we have any
@@ -995,13 +996,18 @@
                     // Then set up real-time listener for future changes
                     const unsubscribe = db.collection('users').doc(authUser.uid).onSnapshot(doc => {
                         if (doc.exists && doc.data().items) {
-                            // Only update if this is a remote change (not our own pending write)
+                            // Skip the first snapshot since we already loaded it above
+                            if (isFirstLoad) {
+                                isFirstLoad = false;
+                                return;
+                            }
+                            // Only update if this is from the server (remote change or server confirmation)
+                            // Skip local pending writes to avoid applying our own changes twice
                             if (!doc.metadata.hasPendingWrites) {
                                 console.log('[Firestore] Real-time update from server:', doc.data().items.length, 'items');
-                                isLoadingFromCloud.current = true;
                                 setItems(doc.data().items);
                             } else {
-                                console.log('[Firestore] Skipping local write echo');
+                                console.log('[Firestore] Skipping local pending write');
                             }
                         }
                     }, err => {
@@ -1184,8 +1190,8 @@
                 try {
                     localStorage.setItem('sl-tracker-items', JSON.stringify(items));
                     
-                    // Sync to Firestore if user is signed in (but skip if we just loaded from cloud to avoid loop)
-                    if (authUser && authUser.uid && !isLoadingFromCloud.current) {
+                    // Sync to Firestore if user is signed in
+                    if (authUser && authUser.uid) {
                         const db = firebase.firestore();
                         db.collection('users').doc(authUser.uid).set({
                             items: items,
@@ -1194,9 +1200,6 @@
                         .then(() => console.log('[Firestore] Items synced'))
                         .catch(err => console.error('[Firestore] Sync error:', err));
                     }
-                    
-                    // Reset the flag after save
-                    isLoadingFromCloud.current = false;
                 } catch (error) {
                     console.error('Error saving data:', error);
                 }
