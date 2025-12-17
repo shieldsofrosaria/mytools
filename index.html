@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🧪 TEST - Second Life Shopping Tracker</title>
+    <title>Second Life Shopping Tracker</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Firebase SDK - Lazy loaded on demand -->
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script>
         // Firebase configuration
-        window.firebaseConfig = {
+        const firebaseConfig = {
             apiKey: "AIzaSyCjXLoLBGXwAY0EXPI0QrhMBUd4ic36nII",
             authDomain: "sl-shopping-tracker.firebaseapp.com",
             projectId: "sl-shopping-tracker",
@@ -21,62 +24,15 @@
             appId: "1:841243726764:web:b7ad10ce99680359b02009"
         };
         
-        // Lazy-load Firebase only when needed
-        window.loadFirebase = function() {
-            return new Promise((resolve, reject) => {
-                if (window.firebase) {
-                    resolve();
-                    return;
-                }
-                
-                console.log('[Firebase] Lazy loading...');
-                const scripts = [
-                    'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js',
-                    'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js',
-                    'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js'
-                ];
-                
-                let loaded = 0;
-                scripts.forEach((src, index) => {
-                    const script = document.createElement('script');
-                    script.src = src;
-                    script.onload = () => {
-                        loaded++;
-                        if (loaded === scripts.length) {
-                            firebase.initializeApp(window.firebaseConfig);
-                            console.log('[Firebase] Initialized (lazy)');
-                            resolve();
-                        }
-                    };
-                    script.onerror = reject;
-                    document.head.appendChild(script);
-                });
-            });
-        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        console.log('[Firebase] Initialized');
     </script>
     
     <script>
         // Suppress Tailwind production warning
         window.tailwindConfig = { devMode: false };
     </script>
-    <style>
-        /* TEST PAGE BANNER */
-        .test-banner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(135deg, #ff6b1a 0%, #ff0000 100%);
-            color: white;
-            text-align: center;
-            padding: 12px;
-            font-weight: bold;
-            font-size: 18px;
-            z-index: 10000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        body { padding-top: 50px !important; }
-    </style>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&display=swap');
         
@@ -779,9 +735,6 @@
     </style>
 </head>
 <body>
-    <div class="test-banner">
-        🧪 TEST PAGE - Performance Optimization Testing - DO NOT USE FOR REAL DATA
-    </div>
     <div id="root"></div>
 
     <script type="text/babel">
@@ -1623,17 +1576,14 @@
                                 </div>
                             ) : (
                                 <button 
-                                    onClick={async () => {
-                                        try {
-                                            // Lazy-load Firebase if not already loaded
-                                            await window.loadFirebase();
-                                            
+                                    onClick={() => {
+                                        if (window.firebase && window.firebase.auth) {
                                             const provider = new window.firebase.auth.GoogleAuthProvider();
-                                            await window.firebase.auth().signInWithPopup(provider);
-                                            console.log('[Auth] Sign-in successful');
-                                        } catch (err) {
-                                            console.error('[Auth] Sign-in error:', err);
-                                            alert('Sign-in failed: ' + err.message);
+                                            window.firebase.auth().signInWithPopup(provider)
+                                                .then(() => console.log('[Auth] Sign-in successful'))
+                                                .catch(err => alert('Sign-in failed: ' + err.message));
+                                        } else {
+                                            alert('Firebase not loaded. Please refresh the page.');
                                         }
                                     }}
                                     className="text-sm font-semibold bg-white/20 hover:bg-white/30 px-4 py-2 rounded transition"
