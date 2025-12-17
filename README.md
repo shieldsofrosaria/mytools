@@ -235,7 +235,6 @@ MIT License - Feel free to use and modify for personal use
 - Built for Second Life enthusiasts
 - ImgBB for free image hosting
 - React and Tailwind CSS teams
-- Claude AI for development assistance
 
 ## 📞 Support
 
