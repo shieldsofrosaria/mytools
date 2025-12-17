@@ -15,82 +15,6 @@
             }
         }
     </script>
-        <!-- Firebase modular SDK + cloudStorage (modular SDK). Replace config below if you prefer a different project. -->
-        <script type="module">
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-            import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, linkWithPopup, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-            import { getFirestore, enableIndexedDbPersistence, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-            // NOTE: To enable Google Sign-in, go to Firebase Console → Authentication → Sign-in method → Google → enable.
-            // After enabling, users can sign in and their data will be linked to their Google account.
-            const firebaseConfig = {
-                apiKey: "AIzaSyCjXLoLBGXwAY0EXPI0QrhMBUd4ic36nII",
-                authDomain: "sl-shopping-tracker.firebaseapp.com",
-                projectId: "sl-shopping-tracker",
-                storageBucket: "sl-shopping-tracker.firebasestorage.app",
-                messagingSenderId: "841243726764",
-                appId: "1:841243726764:web:b7ad10ce99680359b02009"
-            };
-
-            const app = initializeApp(firebaseConfig);
-            const auth = getAuth();
-            const db = getFirestore();
-
-            window.cloudStorage = {
-                enabled: false,
-                uid: null,
-                docRef: null,
-                unsubscribe: null,
-                init: async function() {
-                    try {
-                        try { await enableIndexedDbPersistence(db); } catch (e) { console.warn('Firestore persistence:', e); }
-                        await signInAnonymously(auth);
-                        onAuthStateChanged(auth, async (user) => {
-                            const authPayload = user ? { uid: user.uid, isAnonymous: !!user.isAnonymous, displayName: user.displayName || null, email: user.email || null } : null;
-                            window.dispatchEvent(new CustomEvent('auth-changed', { detail: authPayload }));
-                            if (!user) return;
-                            this.uid = user.uid;
-                            this.docRef = doc(db, 'users', this.uid, 'meta', 'tracker');
-                            this.unsubscribe = onSnapshot(this.docRef, (snap) => {
-                                const data = snap.exists() ? snap.data() : {};
-                                window.dispatchEvent(new CustomEvent('cloud-data', { detail: data }));
-                            });
-                            const snap = await getDoc(this.docRef);
-                            if (snap.exists()) window.dispatchEvent(new CustomEvent('cloud-data', { detail: snap.data() }));
-                            else {
-                                try {
-                                    if (typeof localStorage !== 'undefined') {
-                                        const saved = localStorage.getItem('sl-tracker-items');
-                                        if (saved) {
-                                            await setDoc(this.docRef, { items: JSON.parse(saved) }, { merge: true });
-                                            window.dispatchEvent(new CustomEvent('cloud-data', { detail: { items: JSON.parse(saved) } }));
-                                        }
-                                    }
-                                } catch (e) { console.warn('Error importing local data to cloud', e); }
-                            }
-                        });
-                        this.enabled = true;
-                    } catch (e) { console.warn('cloudStorage init failed', e); }
-                },
-                signInWithGoogle: async function() {
-                    const provider = new GoogleAuthProvider();
-                    try {
-                        if (auth.currentUser && auth.currentUser.isAnonymous) {
-                            await linkWithPopup(auth.currentUser, provider);
-                        } else {
-                            await signInWithPopup(auth, provider);
-                        }
-                    } catch (e) { console.error('Google sign-in failed', e); throw e; }
-                },
-                signOutUser: async function() {
-                    try { await signOut(auth); await signInAnonymously(auth); } catch (e) { console.warn('Sign out failed', e); }
-                },
-                getAll: async function() { if (!this.enabled || !this.docRef) return {}; const snap = await getDoc(this.docRef); return snap.exists() ? snap.data() : {}; },
-                set: async function(key, value) { if (!this.enabled || !this.docRef) return; const payload = {}; payload[key] = value; await setDoc(this.docRef, payload, { merge: true }); }
-            };
-
-            window.cloudStorage.init().catch(e => console.warn('cloud init failed', e));
-        </script>
     <style>
         body {
             margin: 0;
@@ -194,7 +118,6 @@
 
         function App() {
             const [items, setItems] = useState([]);
-            const [authUser, setAuthUser] = useState(null);
             const [activeTab, setActiveTab] = useState('shopping');
             const [formData, setFormData] = useState({
                 name: '',
@@ -217,70 +140,25 @@
             const [filterCategory, setFilterCategory] = useState('');
             const [filterCreator, setFilterCreator] = useState('');
 
-            // Load data from localStorage or cloud
+            // Load data from localStorage
             useEffect(() => {
-                const loadData = async () => {
+                const loadData = () => {
                     try {
-                        let cloud = {};
-                        if (window.cloudStorage && window.cloudStorage.enabled) {
-                            try {
-                                cloud = await window.cloudStorage.getAll();
-                            } catch (e) { console.warn('Could not load cloud data', e); }
-                        }
-                        if (cloud.items) {
-                            setItems(cloud.items);
-                        } else {
-                            const saved = localStorage.getItem('sl-tracker-items');
-                            if (saved) setItems(JSON.parse(saved));
+                        const saved = localStorage.getItem('sl-tracker-items');
+                        if (saved) {
+                            setItems(JSON.parse(saved));
                         }
                     } catch (error) {
-                        console.log('No existing data found, starting fresh', error);
+                        console.log('No existing data found, starting fresh');
                     }
                 };
                 loadData();
-
-                const cloudHandler = (e) => {
-                    try {
-                        const data = e.detail || {};
-                        if (data.items) setItems(data.items);
-                    } catch (err) { console.warn('Cloud handler error', err); }
-                };
-                const authHandler = (e) => {
-                    setAuthUser(e.detail || null);
-                };
-                window.addEventListener('cloud-data', cloudHandler);
-                window.addEventListener('auth-changed', authHandler);
-                return () => {
-                    window.removeEventListener('cloud-data', cloudHandler);
-                    window.removeEventListener('auth-changed', authHandler);
-                };
             }, []);
 
-            const signInWithGoogle = async () => {
-                try {
-                    if (window.cloudStorage && window.cloudStorage.signInWithGoogle) {
-                        await window.cloudStorage.signInWithGoogle();
-                    } else {
-                        alert('Cloud auth not initialized');
-                    }
-                } catch (e) { console.error('Sign in failed', e); alert('Google sign-in failed. Make sure Google Sign-in is enabled in Firebase Console (Auth → Sign-in method → Google).\n\nError: ' + (e && e.message ? e.message : e)); }
-            };
-
-            const signOutUser = async () => {
-                try {
-                    if (window.cloudStorage && window.cloudStorage.signOutUser) {
-                        await window.cloudStorage.signOutUser();
-                    }
-                } catch (e) { console.error('Sign out failed', e); }
-            };
-
-            // Save data to localStorage and cloud (if configured)
+            // Save data to localStorage
             useEffect(() => {
                 try {
                     localStorage.setItem('sl-tracker-items', JSON.stringify(items));
-                    if (window.cloudStorage && window.cloudStorage.set) {
-                        window.cloudStorage.set('items', items).catch(e => console.warn('Cloud save items failed', e));
-                    }
                 } catch (error) {
                     console.error('Error saving data:', error);
                 }
@@ -479,20 +357,7 @@
                 <div className="min-h-screen p-4 md:p-8">
                     <div className="max-w-6xl mx-auto">
                         {/* Header */}
-                        <div className="text-center mb-8 relative">
-                            <div style={{ position: 'absolute', right: '0.5rem', top: '0.25rem' }}>
-                                {authUser && !authUser.isAnonymous ? (
-                                    <div className="flex items-center gap-2 justify-end">
-                                        <span className="text-sm text-white">{authUser.displayName || authUser.email}</span>
-                                        <button onClick={signOutUser} className="ml-2 px-3 py-1 rounded bg-white text-blue-700 font-semibold">Sign out</button>
-                                    </div>
-                                ) : (
-                                    <div className="text-right">
-                                        <button onClick={signInWithGoogle} className="px-3 py-1 rounded bg-white text-blue-700 font-semibold">Sign in with Google</button>
-                                        <div className="text-xs text-white text-opacity-70 mt-1">Sign in with Google to sync across your devices.</div>
-                                    </div>
-                                )}
-                            </div>
+                        <div className="text-center mb-8">
                             <h1 className="text-4xl md:text-5xl font-bold text-white mb-2 flex items-center justify-center gap-3">
                                 🛍️ Second Life Shopping Tracker
                             </h1>
@@ -913,7 +778,7 @@
                                 {/* Storage Information */}
                                 <div className="bg-gray-50 p-6 rounded-lg mb-6">
                                     <h3 className="font-bold text-lg mb-3">📊 Storage Information</h3>
-                                    <p className="mb-2"><strong>Storage Mode:</strong> 💾 Browser localStorage + ImgBB Images<br/><em>Cloud sync available via Firebase — click "Sign in with Google" to enable cross-device sync.</em></p>
+                                    <p className="mb-2"><strong>Storage Mode:</strong> 💾 Browser localStorage + ImgBB Images</p>
                                     <p className="mb-2"><strong>Total Items:</strong> {items.length}</p>
                                     <p className="mb-2"><strong>Estimated Size:</strong> {(JSON.stringify(items).length / 1024).toFixed(2)} KB</p>
                                     <p className="text-sm text-gray-600">Data saved in your browser, images on ImgBB cloud!</p>
@@ -960,7 +825,7 @@
                                 <div className="bg-purple-50 border-l-4 border-purple-500 p-6 mt-6">
                                     <h3 className="font-bold text-lg mb-3 text-purple-900">💡 Storage Tips</h3>
                                     <ul className="space-y-2 text-purple-800">
-                                        <li>• Data saved in your browser's localStorage (or Firebase Cloud if configured)</li>
+                                        <li>• Data saved in your browser's localStorage</li>
                                         <li>• Images automatically uploaded to ImgBB cloud</li>
                                         <li>• Access from any device using your GitHub Pages URL</li>
                                         <li>• Export backups regularly for safety</li>
