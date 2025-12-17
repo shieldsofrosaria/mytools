@@ -8,6 +8,10 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Suppress Tailwind production warning
+        window.tailwindConfig = { devMode: false };
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&display=swap');
         
@@ -119,6 +123,20 @@
 
         body.dark-mode .bg-gray-50 {
             background: var(--dark-bg-secondary) !important;
+        }
+
+        body.dark-mode .bg-purple-50 {
+            background: var(--dark-purple-2) !important;
+        }
+
+        body.dark-mode .text-purple-900 {
+            color: var(--dark-purple-6) !important;
+        }
+
+        body.dark-mode kbd {
+            background: var(--dark-bg-primary) !important;
+            border-color: var(--dark-gold) !important;
+            color: white !important;
         }
 
         body.dark-mode .border-gray-200 {
@@ -364,6 +382,11 @@
             animation: slideUp 0.3s;
         }
 
+        body.dark-mode .modal-content {
+            background: var(--dark-purple-1);
+            border: 2px solid var(--dark-purple-3);
+        }
+
         @keyframes slideUp {
             from {
                 transform: translateY(20px);
@@ -419,6 +442,274 @@
             font-size: 0.875rem;
             opacity: 0.8;
         }
+
+        /* Animated transitions */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .item-card {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        /* Category color coding */
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .category-Animations { background: #fef3c7; color: #92400e; }
+        .category-Body-Parts { background: #ddd6fe; color: #5b21b6; }
+        .category-Clothing { background: #fce7f3; color: #9f1239; }
+        .category-Creator-Tools { background: #dbeafe; color: #1e40af; }
+        .category-EEP-Windlights { background: #fef3c7; color: #b45309; }
+        .category-Food-Drink { background: #fee2e2; color: #991b1b; }
+        .category-Home-Garden { background: #d1fae5; color: #065f46; }
+        .category-Photography-Tools { background: #e0e7ff; color: #3730a3; }
+        .category-Backdrops { background: #fbcfe8; color: #831843; }
+        .category-Textures-Materials { background: #ccfbf1; color: #134e4a; }
+        .category-Toys { background: #fef9c3; color: #854d0e; }
+        .category-Weapons { background: #fee2e2; color: #7f1d1d; }
+        .category-Vehicles { background: #dbeafe; color: #1e3a8a; }
+
+        body.dark-mode .category-badge {
+            opacity: 0.9;
+        }
+
+        body.dark-mode .text-gray-600 {
+            color: #d1d5db !important;
+        }
+
+        /* Status badge with glow */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .status-wishlist {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+        }
+
+        .status-shopping {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+        }
+
+        .status-purchased {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .status-inventory {
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            color: #3730a3;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+        }
+
+        body.dark-mode .status-badge {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        /* Quick copy button */
+        .copy-btn {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            background: var(--dark-purple-2);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--dark-gold);
+            color: #000;
+            transform: scale(1.05);
+        }
+
+        body.dark-mode .copy-btn {
+            background: var(--dark-purple-3);
+        }
+
+        body.dark-mode .copy-btn:hover {
+            background: var(--dark-gold);
+        }
+
+        /* Bulk selection */
+        .bulk-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #ff8c42;
+        }
+
+        body.dark-mode .bulk-checkbox {
+            accent-color: var(--dark-gold);
+        }
+
+        .bulk-actions-bar {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            z-index: 999;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        body.dark-mode .bulk-actions-bar {
+            background: var(--dark-purple-2);
+            border: 2px solid var(--dark-gold);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            #root {
+                padding: 0 10px;
+            }
+            
+            .sl-header {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 1.75rem !important;
+            }
+            
+            h2 {
+                font-size: 1.25rem !important;
+            }
+            
+            .product-card {
+                padding: 20px 15px;
+                margin-bottom: 20px;
+            }
+            
+            .modal-content {
+                margin: 10px;
+                max-height: calc(100vh - 20px);
+                max-width: calc(100vw - 20px);
+            }
+            
+            /* Ensure form fields fit on mobile */
+            .input-field {
+                font-size: 16px !important; /* Prevents zoom on iOS */
+                max-width: 100%;
+                padding: 10px 12px;
+            }
+            
+            select.input-field {
+                font-size: 16px !important;
+            }
+            
+            textarea.input-field {
+                font-size: 16px !important;
+                min-height: 80px;
+            }
+            
+            /* Fix buttons on mobile */
+            .sl-orange-btn,
+            .sl-blue-btn {
+                font-size: 16px;
+                padding: 14px 20px;
+            }
+            
+            /* Stack Add Item and Create List buttons vertically on mobile */
+            .flex.gap-3.mb-6 {
+                flex-direction: column !important;
+            }
+            
+            .flex.gap-3.mb-6 button {
+                width: 100% !important;
+            }
+            
+            /* Fix stats grid on mobile */
+            .stats-card {
+                padding: 12px;
+            }
+            
+            .stat-number {
+                font-size: 1.5rem;
+            }
+            
+            .stat-label {
+                font-size: 0.75rem;
+            }
+            
+            /* Fix tab buttons on mobile */
+            .tab-btn {
+                font-size: 13px;
+                padding: 10px 14px;
+            }
+            
+            /* Fix custom lists grid */
+            .grid.grid-cols-1.md\:grid-cols-3 {
+                grid-template-columns: 1fr !important;
+            }
+            
+            /* Fix item cards grid */
+            .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3 {
+                grid-template-columns: 1fr !important;
+            }
+            
+            /* Fix dark mode toggle position */
+            .dark-mode-toggle {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -430,8 +721,8 @@
         const STATUSES = {
             WISHLIST: '⭐ Wishlist - Want to buy',
             SHOPPING: '🛒 Shopping List - Planning to buy',
-            PURCHASED: '✅ Purchased - Waiting for delivery',
-            INVENTORY: '📦 In Inventory - Owned'
+            SORT: '📦 Sort - Needs to be sorted in SL',
+            INVENTORY: '✅ In Inventory - Owned & Sorted'
         };
 
         const CATEGORIES = [
@@ -441,6 +732,7 @@
             { name: 'Creator Tools', icon: '🛠️' },
             { name: 'EEP/Windlights', icon: '🌅' },
             { name: 'Food & Drink', icon: '🍔' },
+            { name: 'Heads', icon: '👤' },
             { name: 'Home & Garden', icon: '🏡' },
             { name: 'Photography Tools', icon: '📸' },
             { name: 'Backdrops', icon: '🎭' },
@@ -450,6 +742,38 @@
             { name: 'Vehicles', icon: '🚗' }
         ];
 
+        const HEAD_OPTIONS = ['Espen', 'Martian Mutt', 'Abaddon'];
+        const BODY_OPTIONS = ['eBody Reborn', 'Belleza Jake', 'Anatomy', 'LeL Tae', 'LeL Eon', 'LeL Kaya', 'LeL'];
+        const HAIRSTYLE_OPTIONS = ['Short', 'Medium', 'Long', 'Updo', 'Ponytail'];
+        const CLOTHING_OPTIONS = ['Top', 'Bottom', 'Dress', 'Shoes', 'Accessories', 'Outerwear', 'Underwear', 'Full Outfit'];
+
+        const HOME_GARDEN_OPTIONS = [
+            'Appliances',
+            'Electronics',
+            'Fireplaces',
+            'Fountains',
+            'Furniture: Bathroom',
+            'Furniture: Bedroom',
+            'Furniture: Dining Room',
+            'Furniture: Kitchen',
+            'Furniture: Office',
+            'Furniture: Living Room',
+            'Furniture: Outdoor',
+            'Furniture: Recreational Room',
+            'Landscaping',
+            'Lighting',
+            'Pools / Hot Tubs',
+            'Rugs',
+            'Aquariums',
+            'Books',
+            'Clocks',
+            'Flowers / Plants',
+            'Exterior Decor',
+            'Mirrors',
+            'Pottery / Ceramics',
+            'Vehicles'
+        ];
+
         function App() {
             const [items, setItems] = useState([]);
             const [activeTab, setActiveTab] = useState('wishlist');
@@ -457,13 +781,22 @@
                 name: '',
                 store: '',
                 category: '',
+                subcategory: '',
                 status: STATUSES.WISHLIST,
                 tags: '',
                 notes: '',
                 price: '',
                 link: '',
                 landmark: '',
-                image: ''
+                image: '',
+                // Extended fields for Sort/Inventory
+                color: '',
+                head: '',
+                body: '',
+                hairstyleType: '',
+                clothingType: '',
+                bakesOnMesh: '',
+                customFieldValues: {}
             });
             const [imageFile, setImageFile] = useState(null);
             const [imagePreview, setImagePreview] = useState('');
@@ -479,8 +812,23 @@
             const [darkMode, setDarkMode] = useState(false);
             const [customLists, setCustomLists] = useState([]);
             const [showListManager, setShowListManager] = useState(false);
+            const [showCustomFieldsManager, setShowCustomFieldsManager] = useState(false);
             const [newListName, setNewListName] = useState('');
             const [selectedCustomList, setSelectedCustomList] = useState(null);
+            
+            // Extended fields for Sort/Inventory
+            const [customCategories, setCustomCategories] = useState([]);
+            const [customHeads, setCustomHeads] = useState([]);
+            const [customBodies, setCustomBodies] = useState([]);
+            const [customHairstyles, setCustomHairstyles] = useState([]);
+            const [customClothingTypes, setCustomClothingTypes] = useState([]);
+            const [customFields, setCustomFields] = useState([]);
+            
+            // Bulk actions
+            const [selectedItems, setSelectedItems] = useState([]);
+            const [bulkMode, setBulkMode] = useState(false);
+            const [globalSearch, setGlobalSearch] = useState('');
+            const [showGlobalSearch, setShowGlobalSearch] = useState(false);
 
             useEffect(() => {
                 const loadData = () => {
@@ -498,12 +846,59 @@
                         if (savedLists) {
                             setCustomLists(JSON.parse(savedLists));
                         }
+                        // Load custom options
+                        const savedHeads = localStorage.getItem('sl-tracker-custom-heads');
+                        if (savedHeads) setCustomHeads(JSON.parse(savedHeads));
+                        const savedBodies = localStorage.getItem('sl-tracker-custom-bodies');
+                        if (savedBodies) setCustomBodies(JSON.parse(savedBodies));
+                        const savedHairstyles = localStorage.getItem('sl-tracker-custom-hairstyles');
+                        if (savedHairstyles) setCustomHairstyles(JSON.parse(savedHairstyles));
+                        const savedClothingTypes = localStorage.getItem('sl-tracker-custom-clothing-types');
+                        if (savedClothingTypes) setCustomClothingTypes(JSON.parse(savedClothingTypes));
+                        const savedCustomFields = localStorage.getItem('sl-tracker-custom-fields');
+                        if (savedCustomFields) setCustomFields(JSON.parse(savedCustomFields));
                     } catch (error) {
                         console.log('No existing data found');
                     }
                 };
                 loadData();
-            }, []);
+
+                // Keyboard shortcuts
+                const handleKeyPress = (e) => {
+                    // Don't trigger if user is typing in an input
+                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                        return;
+                    }
+
+                    switch(e.key.toLowerCase()) {
+                        case 'a':
+                            if (!showAddForm) {
+                                setShowAddForm(true);
+                            }
+                            break;
+                        case 'escape':
+                            setShowAddForm(false);
+                            setShowEditModal(false);
+                            setShowListManager(false);
+                            setBulkMode(false);
+                            setSelectedItems([]);
+                            break;
+                        case 'b':
+                            setBulkMode(!bulkMode);
+                            setSelectedItems([]);
+                            break;
+                        case 's':
+                            if (e.ctrlKey || e.metaKey) {
+                                e.preventDefault();
+                                exportData();
+                            }
+                            break;
+                    }
+                };
+
+                document.addEventListener('keydown', handleKeyPress);
+                return () => document.removeEventListener('keydown', handleKeyPress);
+            }, [showAddForm, bulkMode]);
 
             useEffect(() => {
                 try {
@@ -512,6 +907,46 @@
                     console.error('Error saving lists:', error);
                 }
             }, [customLists]);
+
+            useEffect(() => {
+                try {
+                    localStorage.setItem('sl-tracker-custom-heads', JSON.stringify(customHeads));
+                } catch (error) {
+                    console.error('Error saving custom heads:', error);
+                }
+            }, [customHeads]);
+
+            useEffect(() => {
+                try {
+                    localStorage.setItem('sl-tracker-custom-bodies', JSON.stringify(customBodies));
+                } catch (error) {
+                    console.error('Error saving custom bodies:', error);
+                }
+            }, [customBodies]);
+
+            useEffect(() => {
+                try {
+                    localStorage.setItem('sl-tracker-custom-hairstyles', JSON.stringify(customHairstyles));
+                } catch (error) {
+                    console.error('Error saving custom hairstyles:', error);
+                }
+            }, [customHairstyles]);
+
+            useEffect(() => {
+                try {
+                    localStorage.setItem('sl-tracker-custom-clothing-types', JSON.stringify(customClothingTypes));
+                } catch (error) {
+                    console.error('Error saving custom clothing types:', error);
+                }
+            }, [customClothingTypes]);
+
+            useEffect(() => {
+                try {
+                    localStorage.setItem('sl-tracker-custom-fields', JSON.stringify(customFields));
+                } catch (error) {
+                    console.error('Error saving custom fields:', error);
+                }
+            }, [customFields]);
 
             const toggleDarkMode = () => {
                 const newDarkMode = !darkMode;
@@ -565,6 +1000,58 @@
                         list.id === listId ? { ...list, name: newName.trim() } : list
                     ));
                 }
+            };
+
+            const toggleItemSelection = (itemId) => {
+                setSelectedItems(prev =>
+                    prev.includes(itemId)
+                        ? prev.filter(id => id !== itemId)
+                        : [...prev, itemId]
+                );
+            };
+
+            const selectAllItems = () => {
+                const currentItems = getFilteredItems();
+                setSelectedItems(currentItems.map(item => item.id));
+            };
+
+            const deselectAll = () => {
+                setSelectedItems([]);
+            };
+
+            const bulkDelete = () => {
+                if (confirm(`🗑️ Delete ${selectedItems.length} items?`)) {
+                    setItems(items.filter(item => !selectedItems.includes(item.id)));
+                    setSelectedItems([]);
+                    setBulkMode(false);
+                }
+            };
+
+            const bulkMoveTo = (newStatus) => {
+                setItems(items.map(item =>
+                    selectedItems.includes(item.id) ? { ...item, status: newStatus } : item
+                ));
+                setSelectedItems([]);
+                setBulkMode(false);
+            };
+
+            const copyToClipboard = (text, label) => {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert(`✅ ${label} copied to clipboard!`);
+                });
+            };
+
+            const globalSearchItems = () => {
+                if (!globalSearch.trim()) return [];
+                
+                const searchLower = globalSearch.toLowerCase();
+                return items.filter(item => 
+                    item.name.toLowerCase().includes(searchLower) ||
+                    item.store.toLowerCase().includes(searchLower) ||
+                    item.tags.toLowerCase().includes(searchLower) ||
+                    item.notes.toLowerCase().includes(searchLower) ||
+                    item.category.toLowerCase().includes(searchLower)
+                );
             };
 
             const uploadToImgBB = async (file) => {
@@ -650,25 +1137,39 @@
                 // Set default status based on active tab
                 let defaultStatus = STATUSES.WISHLIST;
                 if (activeTab === 'shopping') defaultStatus = STATUSES.SHOPPING;
-                if (activeTab === 'purchased') defaultStatus = STATUSES.PURCHASED;
+                if (activeTab === 'sort') defaultStatus = STATUSES.SORT;
+                if (activeTab === 'inventory') defaultStatus = STATUSES.INVENTORY;
                 
                 setFormData({
                     name: '',
                     store: '',
                     category: '',
+                    subcategory: '',
                     status: defaultStatus,
                     tags: '',
                     notes: '',
                     price: '',
                     link: '',
                     landmark: '',
-                    image: ''
+                    image: '',
+                    // Extended fields
+                    color: '',
+                    head: '',
+                    body: '',
+                    hairstyleType: '',
+                    clothingType: '',
+                    bakesOnMesh: '',
+                    customFieldValues: {}
                 });
                 setImageFile(null);
                 setImagePreview('');
                 setEditingId(null);
                 setShowEditModal(false);
                 setShowAddForm(false);
+                // Only reset selectedCustomList if we're not in a custom list view
+                if (activeTab !== 'custom') {
+                    setSelectedCustomList(null);
+                }
             };
 
             const deleteItem = (id) => {
@@ -682,16 +1183,26 @@
                     name: item.name,
                     store: item.store,
                     category: item.category,
+                    subcategory: item.subcategory || '',
                     status: item.status,
                     tags: item.tags,
                     notes: item.notes,
                     price: item.price || '',
                     link: item.link,
                     landmark: item.landmark,
-                    image: item.image
+                    image: item.image,
+                    // Extended fields
+                    color: item.color || '',
+                    head: item.head || '',
+                    body: item.body || '',
+                    hairstyleType: item.hairstyleType || '',
+                    clothingType: item.clothingType || '',
+                    bakesOnMesh: item.bakesOnMesh || '',
+                    customFieldValues: item.customFieldValues || {}
                 });
                 setImagePreview(item.image);
                 setEditingId(item.id);
+                setSelectedCustomList(item.customListId || null);
                 setShowEditModal(true);
             };
 
@@ -716,8 +1227,8 @@
                     case 'shopping':
                         statusFilter = STATUSES.SHOPPING;
                         break;
-                    case 'purchased':
-                        statusFilter = STATUSES.PURCHASED;
+                    case 'sort':
+                        statusFilter = STATUSES.SORT;
                         break;
                     case 'inventory':
                         statusFilter = STATUSES.INVENTORY;
@@ -763,6 +1274,18 @@
             const getCategoryIcon = (categoryName) => {
                 const cat = CATEGORIES.find(c => c.name === categoryName);
                 return cat ? cat.icon : '📦';
+            };
+
+            const getCategoryClass = (categoryName) => {
+                return 'category-' + categoryName.replace(/[^a-zA-Z]/g, '-');
+            };
+
+            const getStatusBadgeClass = (status) => {
+                if (status.includes('Wishlist')) return 'status-wishlist';
+                if (status.includes('Shopping')) return 'status-shopping';
+                if (status.includes('Purchased')) return 'status-purchased';
+                if (status.includes('Inventory')) return 'status-inventory';
+                return '';
             };
 
             const exportData = () => {
@@ -813,7 +1336,30 @@
                                 <span>🛍️</span>
                                 <span>Second Life Shopping Tracker</span>
                             </h1>
-                            <p className="text-blue-100 text-lg">Track your wishlist, shopping & inventory! ✨</p>
+                            <p className="text-blue-100 text-lg mb-4">Track your wishlist, shopping & inventory! ✨</p>
+                            
+                            {/* Global Search */}
+                            <div className="max-w-2xl mx-auto">
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        value={globalSearch}
+                                        onChange={(e) => setGlobalSearch(e.target.value)}
+                                        onFocus={() => setShowGlobalSearch(true)}
+                                        placeholder="🔍 Search across all items... (press / to focus)"
+                                        className="w-full px-6 py-3 rounded-full border-2 border-blue-300 focus:border-white focus:outline-none input-field"
+                                        style={{fontSize: '16px'}}
+                                    />
+                                    {globalSearch && (
+                                        <button
+                                            onClick={() => { setGlobalSearch(''); setShowGlobalSearch(false); }}
+                                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-800 text-xl"
+                                        >
+                                            ✕
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -833,16 +1379,16 @@
                                 🛒 Shopping List
                             </button>
                             <button
-                                onClick={() => { setActiveTab('purchased'); setShowAddForm(false); setSelectedCustomList(null); }}
-                                className={`tab-btn ${activeTab === 'purchased' ? 'tab-active' : 'tab-inactive'}`}
+                                onClick={() => { setActiveTab('sort'); setShowAddForm(false); setSelectedCustomList(null); }}
+                                className={`tab-btn ${activeTab === 'sort' ? 'tab-active' : 'tab-inactive'}`}
                             >
-                                ✅ Purchased
+                                📦 Sort
                             </button>
                             <button
                                 onClick={() => { setActiveTab('inventory'); setShowAddForm(false); setSelectedCustomList(null); }}
                                 className={`tab-btn ${activeTab === 'inventory' ? 'tab-active' : 'tab-inactive'}`}
                             >
-                                📦 Inventory
+                                ✅ Inventory
                             </button>
                             
                             <button
@@ -860,8 +1406,88 @@
                             </button>
                         </div>
 
-                        {/* Wishlist, Shopping List, Purchased, and Custom Lists Tabs */}
-                        {(activeTab === 'wishlist' || activeTab === 'shopping' || activeTab === 'purchased' || activeTab === 'custom') && (
+                        {/* Global Search Results */}
+                        {globalSearch && showGlobalSearch && (
+                            <div className="product-card p-6 mb-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                                        <span>🔍</span>
+                                        <span>Search Results for "{globalSearch}"</span>
+                                    </h3>
+                                    <button
+                                        onClick={() => { setGlobalSearch(''); setShowGlobalSearch(false); }}
+                                        className="text-gray-500 hover:text-gray-700 text-xl"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                                <p className="text-sm text-gray-600 mb-4">
+                                    Found {globalSearchItems().length} {globalSearchItems().length === 1 ? 'item' : 'items'}
+                                </p>
+                                {globalSearchItems().length === 0 ? (
+                                    <div className="text-center py-8 text-gray-500">
+                                        <div className="text-6xl mb-4">🔍</div>
+                                        <p>No items found matching your search.</p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {globalSearchItems().map(item => (
+                                            <div key={item.id} className="product-card overflow-hidden item-card">
+                                                {item.image && (
+                                                    <img 
+                                                        src={item.image} 
+                                                        alt={item.name} 
+                                                        className="w-full h-48 object-contain bg-gray-50 cursor-pointer hover:bg-gray-100 transition"
+                                                        onClick={() => setLightboxImage(item.image)}
+                                                    />
+                                                )}
+                                                <div className="p-4">
+                                                    <div className="flex items-start justify-between mb-2">
+                                                        <h3 className="font-bold text-lg text-gray-800 flex-1">{item.name}</h3>
+                                                        <span className={`status-badge text-xs`}>
+                                                            {item.status.split(' - ')[0]}
+                                                        </span>
+                                                    </div>
+                                                    {item.store && <p className="text-gray-600 mb-2">🏪 {item.store}</p>}
+                                                    {item.category && (
+                                                        <div className="mb-2">
+                                                            <span className={`category-badge ${getCategoryClass(item.category)}`}>
+                                                                {getCategoryIcon(item.category)} {item.category}
+                                                            </span>
+                                                            {item.subcategory && (
+                                                                <span className="text-sm text-gray-600 ml-2">→ {item.subcategory}</span>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                    {item.price && (
+                                                        <p className="font-bold mt-2" style={{color: '#ffd700'}}>
+                                                            💰 L$ {parseFloat(item.price).toLocaleString()}
+                                                        </p>
+                                                    )}
+                                                    <div className="flex gap-2 mt-3">
+                                                        <button
+                                                            onClick={() => editItem(item)}
+                                                            className="flex-1 sl-blue-btn py-2 rounded text-sm"
+                                                        >
+                                                            ✏️ Edit
+                                                        </button>
+                                                        <button
+                                                            onClick={() => deleteItem(item.id)}
+                                                            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded font-semibold transition text-sm"
+                                                        >
+                                                            🗑️
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Wishlist, Shopping List, Sort, and Custom Lists Tabs */}
+                        {(activeTab === 'wishlist' || activeTab === 'shopping' || activeTab === 'sort' || activeTab === 'custom') && (
                             <div>
                                 {/* Add New Item Button / Form */}
                                 {!showAddForm ? (
@@ -870,30 +1496,8 @@
                                             onClick={() => setShowAddForm(true)}
                                             className="flex-1 sl-orange-btn py-4 rounded-lg text-xl flex items-center justify-center gap-2"
                                         >
-                                            {activeTab === 'wishlist' && (
-                                                <>
-                                                    <span>⭐</span>
-                                                    <span>Add to Wishlist</span>
-                                                </>
-                                            )}
-                                            {activeTab === 'shopping' && (
-                                                <>
-                                                    <span>➕</span>
-                                                    <span>Add to Shopping List</span>
-                                                </>
-                                            )}
-                                            {activeTab === 'purchased' && (
-                                                <>
-                                                    <span>✅</span>
-                                                    <span>Add Purchased Item</span>
-                                                </>
-                                            )}
-                                            {activeTab === 'custom' && (
-                                                <>
-                                                    <span>➕</span>
-                                                    <span>Add to {customLists.find(l => l.id === selectedCustomList)?.name}</span>
-                                                </>
-                                            )}
+                                            <span>➕</span>
+                                            <span>Add Item</span>
                                         </button>
                                         <button
                                             onClick={() => setShowListManager(true)}
@@ -901,6 +1505,13 @@
                                         >
                                             <span>📋</span>
                                             <span>Create List</span>
+                                        </button>
+                                        <button
+                                            onClick={() => setBulkMode(!bulkMode)}
+                                            className={`${bulkMode ? 'bg-green-500 hover:bg-green-600' : 'bg-purple-500 hover:bg-purple-600'} text-white px-6 py-4 rounded-lg text-lg flex items-center gap-2 whitespace-nowrap font-semibold transition`}
+                                        >
+                                            <span>{bulkMode ? '✅' : '☑️'}</span>
+                                            <span>{bulkMode ? 'Exit Bulk' : 'Bulk Edit'}</span>
                                         </button>
                                     </div>
                                 ) : (
@@ -919,10 +1530,10 @@
                                                     <span>Add to Shopping List</span>
                                                 </>
                                             )}
-                                            {activeTab === 'purchased' && (
+                                            {activeTab === 'sort' && (
                                                 <>
-                                                    <span>✅</span>
-                                                    <span>Add Purchased Item</span>
+                                                    <span>📦</span>
+                                                    <span>Add to Sort</span>
                                                 </>
                                             )}
                                             {activeTab === 'custom' && (
@@ -984,6 +1595,25 @@
                                                 ))}
                                             </select>
                                         </div>
+
+                                        {/* Home & Garden Subcategory */}
+                                        {formData.category === 'Home & Garden' && (
+                                            <div>
+                                                <label className="block text-sm font-semibold mb-2 text-gray-700">
+                                                    🏡 Subcategory
+                                                </label>
+                                                <select
+                                                    value={formData.subcategory}
+                                                    onChange={(e) => setFormData({...formData, subcategory: e.target.value})}
+                                                    className="w-full input-field"
+                                                >
+                                                    <option value="">Select type...</option>
+                                                    {HOME_GARDEN_OPTIONS.map(option => (
+                                                        <option key={option} value={option}>{option}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        )}
 
                                         <div>
                                             <label className="block text-sm font-semibold mb-2 text-gray-700">
@@ -1089,6 +1719,182 @@
                                             />
                                         </div>
 
+                                        {/* Extended Fields - Only show for Sort or Inventory status */}
+                                        {(formData.status.includes('Sort') || formData.status.includes('Inventory')) && (
+                                            <div className="space-y-4 border-t-2 border-purple-300 pt-4 mt-4">
+                                                <h3 className="font-bold text-lg text-gray-800 flex items-center gap-2">
+                                                    <span>✨</span>
+                                                    <span>Additional Details (Optional)</span>
+                                                </h3>
+
+                                                <div>
+                                                    <label className="block text-sm font-semibold mb-2 text-gray-700">🎨 Color</label>
+                                                    <input
+                                                        type="text"
+                                                        value={formData.color}
+                                                        onChange={(e) => setFormData({...formData, color: e.target.value})}
+                                                        placeholder="e.g., Black, Red, Blue"
+                                                        className="w-full input-field"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-semibold mb-2 text-gray-700">👤 Head</label>
+                                                    <select
+                                                        value={formData.head}
+                                                        onChange={(e) => setFormData({...formData, head: e.target.value})}
+                                                        className="w-full input-field"
+                                                    >
+                                                        <option value="">Select head...</option>
+                                                        {HEAD_OPTIONS.concat(customHeads).map(head => (
+                                                            <option key={head} value={head}>{head}</option>
+                                                        ))}
+                                                        <option value="__add_new__">➕ Add New Head...</option>
+                                                    </select>
+                                                    {formData.head === '__add_new__' && (
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Enter new head name and press Enter"
+                                                            className="w-full input-field mt-2"
+                                                            onKeyPress={(e) => {
+                                                                if (e.key === 'Enter' && e.target.value.trim()) {
+                                                                    e.preventDefault();
+                                                                    setCustomHeads([...customHeads, e.target.value.trim()]);
+                                                                    setFormData({...formData, head: e.target.value.trim()});
+                                                                }
+                                                            }}
+                                                        />
+                                                    )}
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-semibold mb-2 text-gray-700">💪 Body</label>
+                                                    <select
+                                                        value={formData.body}
+                                                        onChange={(e) => setFormData({...formData, body: e.target.value})}
+                                                        className="w-full input-field"
+                                                    >
+                                                        <option value="">Select body...</option>
+                                                        {BODY_OPTIONS.concat(customBodies).map(body => (
+                                                            <option key={body} value={body}>{body}</option>
+                                                        ))}
+                                                        <option value="__add_new__">➕ Add New Body...</option>
+                                                    </select>
+                                                    {formData.body === '__add_new__' && (
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Enter new body name and press Enter"
+                                                            className="w-full input-field mt-2"
+                                                            onKeyPress={(e) => {
+                                                                if (e.key === 'Enter' && e.target.value.trim()) {
+                                                                    e.preventDefault();
+                                                                    setCustomBodies([...customBodies, e.target.value.trim()]);
+                                                                    setFormData({...formData, body: e.target.value.trim()});
+                                                                }
+                                                            }}
+                                                        />
+                                                    )}
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-semibold mb-2 text-gray-700">💇 Hairstyle Type</label>
+                                                    <select
+                                                        value={formData.hairstyleType}
+                                                        onChange={(e) => setFormData({...formData, hairstyleType: e.target.value})}
+                                                        className="w-full input-field"
+                                                    >
+                                                        <option value="">Select hairstyle type...</option>
+                                                        {HAIRSTYLE_OPTIONS.concat(customHairstyles).map(style => (
+                                                            <option key={style} value={style}>{style}</option>
+                                                        ))}
+                                                        <option value="__add_new__">➕ Add New Hairstyle Type...</option>
+                                                    </select>
+                                                    {formData.hairstyleType === '__add_new__' && (
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Enter new hairstyle type and press Enter"
+                                                            className="w-full input-field mt-2"
+                                                            onKeyPress={(e) => {
+                                                                if (e.key === 'Enter' && e.target.value.trim()) {
+                                                                    e.preventDefault();
+                                                                    setCustomHairstyles([...customHairstyles, e.target.value.trim()]);
+                                                                    setFormData({...formData, hairstyleType: e.target.value.trim()});
+                                                                }
+                                                            }}
+                                                        />
+                                                    )}
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-semibold mb-2 text-gray-700">👗 Clothing Type</label>
+                                                    <select
+                                                        value={formData.clothingType}
+                                                        onChange={(e) => setFormData({...formData, clothingType: e.target.value})}
+                                                        className="w-full input-field"
+                                                    >
+                                                        <option value="">Select clothing type...</option>
+                                                        {CLOTHING_OPTIONS.concat(customClothingTypes).map(type => (
+                                                            <option key={type} value={type}>{type}</option>
+                                                        ))}
+                                                        <option value="__add_new__">➕ Add New Clothing Type...</option>
+                                                    </select>
+                                                    {formData.clothingType === '__add_new__' && (
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Enter new clothing type and press Enter"
+                                                            className="w-full input-field mt-2"
+                                                            onKeyPress={(e) => {
+                                                                if (e.key === 'Enter' && e.target.value.trim()) {
+                                                                    e.preventDefault();
+                                                                    setCustomClothingTypes([...customClothingTypes, e.target.value.trim()]);
+                                                                    setFormData({...formData, clothingType: e.target.value.trim()});
+                                                                }
+                                                            }}
+                                                        />
+                                                    )}
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-semibold mb-2 text-gray-700">🎭 Bakes on Mesh</label>
+                                                    <div className="flex gap-4">
+                                                        <label className="flex items-center gap-2 cursor-pointer">
+                                                            <input
+                                                                type="radio"
+                                                                name="bakesOnMeshAdd"
+                                                                value="Yes"
+                                                                checked={formData.bakesOnMesh === 'Yes'}
+                                                                onChange={(e) => setFormData({...formData, bakesOnMesh: e.target.value})}
+                                                                className="bulk-checkbox"
+                                                            />
+                                                            <span className="text-gray-700">Yes</span>
+                                                        </label>
+                                                        <label className="flex items-center gap-2 cursor-pointer">
+                                                            <input
+                                                                type="radio"
+                                                                name="bakesOnMeshAdd"
+                                                                value="No"
+                                                                checked={formData.bakesOnMesh === 'No'}
+                                                                onChange={(e) => setFormData({...formData, bakesOnMesh: e.target.value})}
+                                                                className="bulk-checkbox"
+                                                            />
+                                                            <span className="text-gray-700">No</span>
+                                                        </label>
+                                                        <label className="flex items-center gap-2 cursor-pointer">
+                                                            <input
+                                                                type="radio"
+                                                                name="bakesOnMeshAdd"
+                                                                value=""
+                                                                checked={formData.bakesOnMesh === ''}
+                                                                onChange={(e) => setFormData({...formData, bakesOnMesh: e.target.value})}
+                                                                className="bulk-checkbox"
+                                                            />
+                                                            <span className="text-gray-700">Not specified</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
                                         <div>
                                             <label className="block text-sm font-semibold mb-2 text-gray-700">
                                                 📷 Product Image
@@ -1172,15 +1978,17 @@
                                             {getItemCount(
                                                 activeTab === 'wishlist' ? STATUSES.WISHLIST :
                                                 activeTab === 'shopping' ? STATUSES.SHOPPING :
+                                                activeTab === 'sort' ? STATUSES.SORT :
                                                 activeTab === 'custom' ? null :
-                                                STATUSES.PURCHASED
+                                                STATUSES.INVENTORY
                                             ) || (activeTab === 'custom' ? getFilteredItems().length : 0)}
                                         </div>
                                         <div className="stat-label text-gray-600">
                                             📦 {((activeTab === 'custom' ? getFilteredItems().length : getItemCount(
                                                 activeTab === 'wishlist' ? STATUSES.WISHLIST :
                                                 activeTab === 'shopping' ? STATUSES.SHOPPING :
-                                                STATUSES.PURCHASED
+                                                activeTab === 'sort' ? STATUSES.SORT :
+                                                STATUSES.INVENTORY
                                             )) === 1) ? 'Item' : 'Items'}
                                         </div>
                                     </div>
@@ -1189,8 +1997,9 @@
                                             {getTotalPrice(
                                                 activeTab === 'wishlist' ? STATUSES.WISHLIST :
                                                 activeTab === 'shopping' ? STATUSES.SHOPPING :
+                                                activeTab === 'sort' ? STATUSES.SORT :
                                                 activeTab === 'custom' ? null :
-                                                STATUSES.PURCHASED
+                                                STATUSES.INVENTORY
                                             ) || (activeTab === 'custom' ? getFilteredItems().reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0) : 0).toLocaleString()}
                                         </div>
                                         <div className="stat-label text-gray-600">
@@ -1218,7 +2027,19 @@
                                 {/* Items List */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {getFilteredItems().map(item => (
-                                        <div key={item.id} className="product-card overflow-hidden">
+                                        <div key={item.id} className="product-card overflow-hidden item-card" style={{position: 'relative'}}>
+                                            {/* Bulk Mode Checkbox */}
+                                            {bulkMode && (
+                                                <div style={{position: 'absolute', top: '10px', left: '10px', zIndex: 10}}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedItems.includes(item.id)}
+                                                        onChange={() => toggleItemSelection(item.id)}
+                                                        className="bulk-checkbox"
+                                                    />
+                                                </div>
+                                            )}
+
                                             {item.image && (
                                                 <img 
                                                     src={item.image} 
@@ -1236,10 +2057,14 @@
                                                     </p>
                                                 )}
                                                 {item.category && (
-                                                    <p className="text-gray-500 text-sm mb-2 flex items-center gap-1">
-                                                        <span>{getCategoryIcon(item.category)}</span>
-                                                        <span>{item.category}</span>
-                                                    </p>
+                                                    <div className="mb-2">
+                                                        <span className={`category-badge ${getCategoryClass(item.category)}`}>
+                                                            {getCategoryIcon(item.category)} {item.category}
+                                                        </span>
+                                                        {item.subcategory && (
+                                                            <span className="text-sm text-gray-600 ml-2">→ {item.subcategory}</span>
+                                                        )}
+                                                    </div>
                                                 )}
                                                 
                                                 {item.price && (
@@ -1252,6 +2077,28 @@
                                                 <p className="text-xs text-gray-500 mb-3">
                                                     📅 Added {new Date(item.createdAt).toLocaleDateString()}
                                                 </p>
+                                                
+                                                {/* Quick Copy Buttons */}
+                                                {(item.link || item.landmark) && (
+                                                    <div className="flex gap-2 mb-3 flex-wrap">
+                                                        {item.link && (
+                                                            <button
+                                                                onClick={() => copyToClipboard(item.link, 'Store link')}
+                                                                className="copy-btn"
+                                                            >
+                                                                🔗 Copy Link
+                                                            </button>
+                                                        )}
+                                                        {item.landmark && (
+                                                            <button
+                                                                onClick={() => copyToClipboard(item.landmark, 'Landmark')}
+                                                                className="copy-btn"
+                                                            >
+                                                                📍 Copy SLURL
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                )}
                                                 
                                                 <div className="mb-3">
                                                     <span className={`badge badge-${item.status.split(' ')[0]}`}>
@@ -1453,6 +2300,32 @@
                                     <span>Settings & Data Management</span>
                                 </h2>
 
+                                {/* Keyboard Shortcuts */}
+                                <div className="bg-purple-50 border-l-4 border-purple-500 p-6 mb-6 rounded">
+                                    <h3 className="font-bold text-lg mb-4 text-purple-900 flex items-center gap-2">
+                                        <span>⌨️</span>
+                                        <span>Keyboard Shortcuts</span>
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                                        <div className="flex justify-between">
+                                            <span className="font-semibold">Press <kbd className="px-2 py-1 bg-white rounded border">A</kbd></span>
+                                            <span className="text-gray-600">Open add item form</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="font-semibold">Press <kbd className="px-2 py-1 bg-white rounded border">B</kbd></span>
+                                            <span className="text-gray-600">Toggle bulk edit mode</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="font-semibold">Press <kbd className="px-2 py-1 bg-white rounded border">Esc</kbd></span>
+                                            <span className="text-gray-600">Close modals/forms</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="font-semibold">Press <kbd className="px-2 py-1 bg-white rounded border">Ctrl/Cmd</kbd> + <kbd className="px-2 py-1 bg-white rounded border">S</kbd></span>
+                                            <span className="text-gray-600">Export data</span>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {/* Storage Info */}
                                 <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6 rounded">
                                     <h3 className="font-bold text-lg mb-2 text-blue-900 flex items-center gap-2">
@@ -1556,6 +2429,23 @@
                                         </select>
                                     </div>
 
+                                    {/* Home & Garden Subcategory */}
+                                    {formData.category === 'Home & Garden' && (
+                                        <div>
+                                            <label className="block text-sm font-semibold mb-2">🏡 Subcategory</label>
+                                            <select
+                                                value={formData.subcategory}
+                                                onChange={(e) => setFormData({...formData, subcategory: e.target.value})}
+                                                className="w-full input-field"
+                                            >
+                                                <option value="">Select type...</option>
+                                                {HOME_GARDEN_OPTIONS.map(option => (
+                                                    <option key={option} value={option}>{option}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    )}
+
                                     <div>
                                         <label className="block text-sm font-semibold mb-2">🏷️ Status *</label>
                                         <select
@@ -1568,6 +2458,25 @@
                                             ))}
                                         </select>
                                     </div>
+
+                                    {customLists.length > 0 && (
+                                        <div>
+                                            <label className="block text-sm font-semibold mb-2">📋 Custom List (Optional)</label>
+                                            <select
+                                                value={selectedCustomList || ''}
+                                                onChange={(e) => setSelectedCustomList(e.target.value ? parseInt(e.target.value) : null)}
+                                                className="w-full input-field"
+                                            >
+                                                <option value="">None - Use regular list</option>
+                                                {customLists.map(list => (
+                                                    <option key={list.id} value={list.id}>
+                                                        {list.icon} {list.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <p className="text-sm text-gray-500 mt-1">💡 Items in custom lists won't appear in regular Wishlist/Shopping tabs</p>
+                                        </div>
+                                    )}
 
                                     <div>
                                         <label className="block text-sm font-semibold mb-2">🏷️ Tags</label>
@@ -1620,6 +2529,150 @@
                                             className="w-full input-field"
                                         />
                                     </div>
+
+                                    {/* Extended Fields - Only show for Sort or Inventory status */}
+                                    {(formData.status.includes('Sort') || formData.status.includes('Inventory')) && (
+                                        <div className="space-y-4 border-t-2 border-purple-300 pt-4 mt-4">
+                                            <h3 className="font-bold text-lg text-gray-800 flex items-center gap-2">
+                                                <span>✨</span>
+                                                <span>Additional Details (Optional)</span>
+                                            </h3>
+
+                                            <div>
+                                                <label className="block text-sm font-semibold mb-2">🎨 Color</label>
+                                                <input
+                                                    type="text"
+                                                    value={formData.color}
+                                                    onChange={(e) => setFormData({...formData, color: e.target.value})}
+                                                    placeholder="e.g., Black, Red, Blue"
+                                                    className="w-full input-field"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-semibold mb-2">👤 Head</label>
+                                                <select
+                                                    value={formData.head}
+                                                    onChange={(e) => setFormData({...formData, head: e.target.value})}
+                                                    className="w-full input-field"
+                                                >
+                                                    <option value="">Select head...</option>
+                                                    {HEAD_OPTIONS.concat(customHeads).map(head => (
+                                                        <option key={head} value={head}>{head}</option>
+                                                    ))}
+                                                    <option value="__add_new__">➕ Add New Head...</option>
+                                                </select>
+                                                {formData.head === '__add_new__' && (
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Enter new head name"
+                                                        className="w-full input-field mt-2"
+                                                        onKeyPress={(e) => {
+                                                            if (e.key === 'Enter' && e.target.value.trim()) {
+                                                                setCustomHeads([...customHeads, e.target.value.trim()]);
+                                                                setFormData({...formData, head: e.target.value.trim()});
+                                                            }
+                                                        }}
+                                                    />
+                                                )}
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-semibold mb-2">💪 Body</label>
+                                                <select
+                                                    value={formData.body}
+                                                    onChange={(e) => setFormData({...formData, body: e.target.value})}
+                                                    className="w-full input-field"
+                                                >
+                                                    <option value="">Select body...</option>
+                                                    {BODY_OPTIONS.concat(customBodies).map(body => (
+                                                        <option key={body} value={body}>{body}</option>
+                                                    ))}
+                                                    <option value="__add_new__">➕ Add New Body...</option>
+                                                </select>
+                                                {formData.body === '__add_new__' && (
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Enter new body name"
+                                                        className="w-full input-field mt-2"
+                                                        onKeyPress={(e) => {
+                                                            if (e.key === 'Enter' && e.target.value.trim()) {
+                                                                setCustomBodies([...customBodies, e.target.value.trim()]);
+                                                                setFormData({...formData, body: e.target.value.trim()});
+                                                            }
+                                                        }}
+                                                    />
+                                                )}
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-semibold mb-2">💇 Hairstyle Type</label>
+                                                <select
+                                                    value={formData.hairstyleType}
+                                                    onChange={(e) => setFormData({...formData, hairstyleType: e.target.value})}
+                                                    className="w-full input-field"
+                                                >
+                                                    <option value="">Select hairstyle type...</option>
+                                                    {HAIRSTYLE_OPTIONS.concat(customHairstyles).map(style => (
+                                                        <option key={style} value={style}>{style}</option>
+                                                    ))}
+                                                    <option value="__add_new__">➕ Add New Hairstyle Type...</option>
+                                                </select>
+                                                {formData.hairstyleType === '__add_new__' && (
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Enter new hairstyle type"
+                                                        className="w-full input-field mt-2"
+                                                        onKeyPress={(e) => {
+                                                            if (e.key === 'Enter' && e.target.value.trim()) {
+                                                                setCustomHairstyles([...customHairstyles, e.target.value.trim()]);
+                                                                setFormData({...formData, hairstyleType: e.target.value.trim()});
+                                                            }
+                                                        }}
+                                                    />
+                                                )}
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-semibold mb-2">🎭 Bakes on Mesh</label>
+                                                <div className="flex gap-4">
+                                                    <label className="flex items-center gap-2 cursor-pointer">
+                                                        <input
+                                                            type="radio"
+                                                            name="bakesOnMesh"
+                                                            value="Yes"
+                                                            checked={formData.bakesOnMesh === 'Yes'}
+                                                            onChange={(e) => setFormData({...formData, bakesOnMesh: e.target.value})}
+                                                            className="bulk-checkbox"
+                                                        />
+                                                        <span>Yes</span>
+                                                    </label>
+                                                    <label className="flex items-center gap-2 cursor-pointer">
+                                                        <input
+                                                            type="radio"
+                                                            name="bakesOnMesh"
+                                                            value="No"
+                                                            checked={formData.bakesOnMesh === 'No'}
+                                                            onChange={(e) => setFormData({...formData, bakesOnMesh: e.target.value})}
+                                                            className="bulk-checkbox"
+                                                        />
+                                                        <span>No</span>
+                                                    </label>
+                                                    <label className="flex items-center gap-2 cursor-pointer">
+                                                        <input
+                                                            type="radio"
+                                                            name="bakesOnMesh"
+                                                            value=""
+                                                            checked={formData.bakesOnMesh === ''}
+                                                            onChange={(e) => setFormData({...formData, bakesOnMesh: e.target.value})}
+                                                            className="bulk-checkbox"
+                                                        />
+                                                        <span>Not specified</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
 
                                     {imagePreview && (
                                         <div>
@@ -1755,6 +2808,55 @@
                                     ✅ Done
                                 </button>
                             </div>
+                        </div>
+                    )}
+                    
+                    {/* Bulk Actions Bar */}
+                    {bulkMode && selectedItems.length > 0 && (
+                        <div className="bulk-actions-bar">
+                            <span className="font-bold text-gray-800">{selectedItems.length} selected</span>
+                            <button
+                                onClick={selectAllItems}
+                                className="sl-blue-btn py-2 px-4 rounded text-sm"
+                            >
+                                Select All
+                            </button>
+                            <button
+                                onClick={deselectAll}
+                                className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded font-semibold transition text-sm"
+                            >
+                                Deselect All
+                            </button>
+                            <button
+                                onClick={() => bulkMoveTo(STATUSES.WISHLIST)}
+                                className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded font-semibold transition text-sm"
+                            >
+                                ⭐ To Wishlist
+                            </button>
+                            <button
+                                onClick={() => bulkMoveTo(STATUSES.SHOPPING)}
+                                className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded font-semibold transition text-sm"
+                            >
+                                🛒 To Shopping
+                            </button>
+                            <button
+                                onClick={() => bulkMoveTo(STATUSES.SORT)}
+                                className="bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded font-semibold transition text-sm"
+                            >
+                                📦 To Sort
+                            </button>
+                            <button
+                                onClick={() => bulkMoveTo(STATUSES.INVENTORY)}
+                                className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded font-semibold transition text-sm"
+                            >
+                                ✅ To Inventory
+                            </button>
+                            <button
+                                onClick={bulkDelete}
+                                className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded font-semibold transition text-sm"
+                            >
+                                🗑️ Delete
+                            </button>
                         </div>
                     )}
                     
