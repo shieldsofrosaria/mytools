@@ -12,6 +12,97 @@
         // Suppress Tailwind production warning
         window.tailwindConfig = { devMode: false };
     </script>
+        <!-- Firebase modular SDK + cloudStorage (modular SDK). Replace config below if you prefer a different project. -->
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+            import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, linkWithPopup, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+            import { getFirestore, enableIndexedDbPersistence, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+            // Your web app's Firebase configuration (from your Firebase Console)
+            // NOTE: To enable Google Sign-in, go to Firebase Console → Authentication → Sign-in method → Google → enable.
+            // After enabling, users can sign in and their data will be linked to their Google account.
+            const firebaseConfig = {
+                apiKey: "AIzaSyCjXLoLBGXwAY0EXPI0QrhMBUd4ic36nII",
+                authDomain: "sl-shopping-tracker.firebaseapp.com",
+                projectId: "sl-shopping-tracker",
+                storageBucket: "sl-shopping-tracker.firebasestorage.app",
+                messagingSenderId: "841243726764",
+                appId: "1:841243726764:web:b7ad10ce99680359b02009"
+            };
+
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth();
+            const db = getFirestore();
+
+            window.cloudStorage = {
+                enabled: false,
+                uid: null,
+                docRef: null,
+                unsubscribe: null,
+                init: async function() {
+                    try {
+                        try { await enableIndexedDbPersistence(db); } catch (e) { console.warn('Firestore persistence:', e); }
+                        await signInAnonymously(auth);
+                        onAuthStateChanged(auth, async (user) => {
+                            // Dispatch auth state for UI
+                            const authPayload = user ? { uid: user.uid, isAnonymous: !!user.isAnonymous, displayName: user.displayName || null, email: user.email || null } : null;
+                            window.dispatchEvent(new CustomEvent('auth-changed', { detail: authPayload }));
+                            if (!user) return;
+                            this.uid = user.uid;
+                            this.docRef = doc(db, 'users', this.uid, 'meta', 'tracker');
+                            this.unsubscribe = onSnapshot(this.docRef, (snap) => {
+                                const data = snap.exists() ? snap.data() : {};
+                                window.dispatchEvent(new CustomEvent('cloud-data', { detail: data }));
+                            });
+                            const snap = await getDoc(this.docRef);
+                            if (snap.exists()) {
+                                window.dispatchEvent(new CustomEvent('cloud-data', { detail: snap.data() }));
+                            } else {
+                                // If no cloud data yet, try importing localStorage to cloud for continuity
+                                try {
+                                    if (typeof localStorage !== 'undefined') {
+                                        const saved = localStorage.getItem('sl-tracker-items');
+                                        if (saved) {
+                                            await setDoc(this.docRef, { items: JSON.parse(saved) }, { merge: true });
+                                            window.dispatchEvent(new CustomEvent('cloud-data', { detail: { items: JSON.parse(saved) } }));
+                                        }
+                                    }
+                                } catch (e) { console.warn('Error importing local data to cloud', e); }
+                            }
+                        });
+                        this.enabled = true;
+                    } catch (e) {
+                        console.warn('cloudStorage init failed', e);
+                    }
+                },
+                signInWithGoogle: async function() {
+                    const provider = new GoogleAuthProvider();
+                    try {
+                        if (auth.currentUser && auth.currentUser.isAnonymous) {
+                            // Link anonymous account to Google to preserve existing data
+                            await linkWithPopup(auth.currentUser, provider);
+                        } else {
+                            await signInWithPopup(auth, provider);
+                        }
+                    } catch (e) {
+                        console.error('Google sign-in failed', e);
+                        throw e;
+                    }
+                },
+                signOutUser: async function() {
+                    try {
+                        await signOut(auth);
+                        // Re-establish anonymous session so app continues to work
+                        await signInAnonymously(auth);
+                    } catch (e) { console.warn('Sign out failed', e); }
+                },
+                getAll: async function() { if (!this.enabled || !this.docRef) return {}; const snap = await getDoc(this.docRef); return snap.exists() ? snap.data() : {}; },
+                set: async function(key, value) { if (!this.enabled || !this.docRef) return; const payload = {}; payload[key] = value; await setDoc(this.docRef, payload, { merge: true }); }
+            };
+
+            // Initialize in background. If you prefer manual init, remove this line.
+            window.cloudStorage.init().catch(e => console.warn('cloud init failed', e));
+        </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&display=swap');
         
@@ -813,6 +904,7 @@
             const [customLists, setCustomLists] = useState([]);
             const [showListManager, setShowListManager] = useState(false);
             const [showCustomFieldsManager, setShowCustomFieldsManager] = useState(false);
+            const [authUser, setAuthUser] = useState(null);
             const [newListName, setNewListName] = useState('');
             const [selectedCustomList, setSelectedCustomList] = useState(null);
             
@@ -831,37 +923,103 @@
             const [showGlobalSearch, setShowGlobalSearch] = useState(false);
 
             useEffect(() => {
-                const loadData = () => {
+                const loadData = async () => {
                     try {
-                        const saved = localStorage.getItem('sl-tracker-items');
-                        if (saved) {
-                            setItems(JSON.parse(saved));
+                        // Try cloud (Firestore) first, then fallback to localStorage
+                        let cloud = {};
+                        if (window.cloudStorage && window.cloudStorage.enabled) {
+                            try {
+                                cloud = await window.cloudStorage.getAll();
+                            } catch (e) {
+                                console.warn('Could not load cloud data', e);
+                            }
                         }
-                        const savedDarkMode = localStorage.getItem('sl-tracker-darkmode');
-                        if (savedDarkMode === 'true') {
-                            setDarkMode(true);
-                            document.body.classList.add('dark-mode');
+
+                        if (cloud.items) {
+                            setItems(cloud.items);
+                        } else {
+                            const saved = localStorage.getItem('sl-tracker-items');
+                            if (saved) setItems(JSON.parse(saved));
                         }
-                        const savedLists = localStorage.getItem('sl-tracker-custom-lists');
-                        if (savedLists) {
-                            setCustomLists(JSON.parse(savedLists));
+
+                        if (cloud.darkMode !== undefined) {
+                            const dm = cloud.darkMode === true || cloud.darkMode === 'true';
+                            setDarkMode(dm);
+                            if (dm) document.body.classList.add('dark-mode');
+                        } else {
+                            const savedDarkMode = localStorage.getItem('sl-tracker-darkmode');
+                            if (savedDarkMode === 'true') {
+                                setDarkMode(true);
+                                document.body.classList.add('dark-mode');
+                            }
                         }
-                        // Load custom options
-                        const savedHeads = localStorage.getItem('sl-tracker-custom-heads');
-                        if (savedHeads) setCustomHeads(JSON.parse(savedHeads));
-                        const savedBodies = localStorage.getItem('sl-tracker-custom-bodies');
-                        if (savedBodies) setCustomBodies(JSON.parse(savedBodies));
-                        const savedHairstyles = localStorage.getItem('sl-tracker-custom-hairstyles');
-                        if (savedHairstyles) setCustomHairstyles(JSON.parse(savedHairstyles));
-                        const savedClothingTypes = localStorage.getItem('sl-tracker-custom-clothing-types');
-                        if (savedClothingTypes) setCustomClothingTypes(JSON.parse(savedClothingTypes));
-                        const savedCustomFields = localStorage.getItem('sl-tracker-custom-fields');
-                        if (savedCustomFields) setCustomFields(JSON.parse(savedCustomFields));
+
+                        if (cloud.customLists) setCustomLists(cloud.customLists);
+                        else {
+                            const savedLists = localStorage.getItem('sl-tracker-custom-lists');
+                            if (savedLists) setCustomLists(JSON.parse(savedLists));
+                        }
+
+                        if (cloud.customHeads) setCustomHeads(cloud.customHeads);
+                        else {
+                            const savedHeads = localStorage.getItem('sl-tracker-custom-heads');
+                            if (savedHeads) setCustomHeads(JSON.parse(savedHeads));
+                        }
+
+                        if (cloud.customBodies) setCustomBodies(cloud.customBodies);
+                        else {
+                            const savedBodies = localStorage.getItem('sl-tracker-custom-bodies');
+                            if (savedBodies) setCustomBodies(JSON.parse(savedBodies));
+                        }
+
+                        if (cloud.customHairstyles) setCustomHairstyles(cloud.customHairstyles);
+                        else {
+                            const savedHairstyles = localStorage.getItem('sl-tracker-custom-hairstyles');
+                            if (savedHairstyles) setCustomHairstyles(JSON.parse(savedHairstyles));
+                        }
+
+                        if (cloud.customClothingTypes) setCustomClothingTypes(cloud.customClothingTypes);
+                        else {
+                            const savedClothingTypes = localStorage.getItem('sl-tracker-custom-clothing-types');
+                            if (savedClothingTypes) setCustomClothingTypes(JSON.parse(savedClothingTypes));
+                        }
+
+                        if (cloud.customFields) setCustomFields(cloud.customFields);
+                        else {
+                            const savedCustomFields = localStorage.getItem('sl-tracker-custom-fields');
+                            if (savedCustomFields) setCustomFields(JSON.parse(savedCustomFields));
+                        }
                     } catch (error) {
-                        console.log('No existing data found');
+                        console.log('No existing data found', error);
                     }
                 };
                 loadData();
+
+                // Listen for real-time cloud updates
+                const cloudHandler = (e) => {
+                    try {
+                        const data = e.detail || {};
+                        if (data.items) setItems(data.items);
+                        if (data.darkMode !== undefined) {
+                            const dm = data.darkMode === true || data.darkMode === 'true';
+                            setDarkMode(dm);
+                            if (dm) document.body.classList.add('dark-mode'); else document.body.classList.remove('dark-mode');
+                        }
+                        if (data.customLists) setCustomLists(data.customLists);
+                        if (data.customHeads) setCustomHeads(data.customHeads);
+                        if (data.customBodies) setCustomBodies(data.customBodies);
+                        if (data.customHairstyles) setCustomHairstyles(data.customHairstyles);
+                        if (data.customClothingTypes) setCustomClothingTypes(data.customClothingTypes);
+                        if (data.customFields) setCustomFields(data.customFields);
+                    } catch (err) { console.warn('Cloud handler error', err); }
+                };
+                window.addEventListener('cloud-data', cloudHandler);
+
+                // Keyboard shortcuts
+                const authHandler = (e) => {
+                    setAuthUser(e.detail || null);
+                };
+                window.addEventListener('auth-changed', authHandler);
 
                 // Keyboard shortcuts
                 const handleKeyPress = (e) => {
@@ -897,12 +1055,42 @@
                 };
 
                 document.addEventListener('keydown', handleKeyPress);
-                return () => document.removeEventListener('keydown', handleKeyPress);
+                return () => {
+                    document.removeEventListener('keydown', handleKeyPress);
+                    window.removeEventListener('cloud-data', cloudHandler);
+                };
+                    document.removeEventListener('keydown', handleKeyPress);
+                    window.removeEventListener('auth-changed', authHandler);
+                };
             }, [showAddForm, bulkMode]);
+
+            const signInWithGoogle = async () => {
+                try {
+                    if (window.cloudStorage && window.cloudStorage.signInWithGoogle) {
+                        await window.cloudStorage.signInWithGoogle();
+                    } else {
+                        alert('Cloud auth not initialized');
+                    }
+                } catch (e) {
+                    console.error('Sign in failed', e);
+                    alert('Google sign-in failed. Make sure Google Sign-in is enabled in Firebase Console (Auth → Sign-in method → Google).\n\nError: ' + (e && e.message ? e.message : e));
+                }
+            };
+
+            const signOutUser = async () => {
+                try {
+                    if (window.cloudStorage && window.cloudStorage.signOutUser) {
+                        await window.cloudStorage.signOutUser();
+                    }
+                } catch (e) { console.error('Sign out failed', e); }
+            };
 
             useEffect(() => {
                 try {
                     localStorage.setItem('sl-tracker-custom-lists', JSON.stringify(customLists));
+                    if (window.cloudStorage && window.cloudStorage.set) {
+                        window.cloudStorage.set('customLists', customLists).catch(e => console.warn('Cloud save lists failed', e));
+                    }
                 } catch (error) {
                     console.error('Error saving lists:', error);
                 }
@@ -911,6 +1099,9 @@
             useEffect(() => {
                 try {
                     localStorage.setItem('sl-tracker-custom-heads', JSON.stringify(customHeads));
+                    if (window.cloudStorage && window.cloudStorage.set) {
+                        window.cloudStorage.set('customHeads', customHeads).catch(e => console.warn('Cloud save customHeads failed', e));
+                    }
                 } catch (error) {
                     console.error('Error saving custom heads:', error);
                 }
@@ -919,6 +1110,9 @@
             useEffect(() => {
                 try {
                     localStorage.setItem('sl-tracker-custom-bodies', JSON.stringify(customBodies));
+                    if (window.cloudStorage && window.cloudStorage.set) {
+                        window.cloudStorage.set('customBodies', customBodies).catch(e => console.warn('Cloud save customBodies failed', e));
+                    }
                 } catch (error) {
                     console.error('Error saving custom bodies:', error);
                 }
@@ -927,6 +1121,9 @@
             useEffect(() => {
                 try {
                     localStorage.setItem('sl-tracker-custom-hairstyles', JSON.stringify(customHairstyles));
+                    if (window.cloudStorage && window.cloudStorage.set) {
+                        window.cloudStorage.set('customHairstyles', customHairstyles).catch(e => console.warn('Cloud save customHairstyles failed', e));
+                    }
                 } catch (error) {
                     console.error('Error saving custom hairstyles:', error);
                 }
@@ -935,6 +1132,9 @@
             useEffect(() => {
                 try {
                     localStorage.setItem('sl-tracker-custom-clothing-types', JSON.stringify(customClothingTypes));
+                    if (window.cloudStorage && window.cloudStorage.set) {
+                        window.cloudStorage.set('customClothingTypes', customClothingTypes).catch(e => console.warn('Cloud save customClothingTypes failed', e));
+                    }
                 } catch (error) {
                     console.error('Error saving custom clothing types:', error);
                 }
@@ -943,6 +1143,9 @@
             useEffect(() => {
                 try {
                     localStorage.setItem('sl-tracker-custom-fields', JSON.stringify(customFields));
+                    if (window.cloudStorage && window.cloudStorage.set) {
+                        window.cloudStorage.set('customFields', customFields).catch(e => console.warn('Cloud save customFields failed', e));
+                    }
                 } catch (error) {
                     console.error('Error saving custom fields:', error);
                 }
@@ -951,7 +1154,14 @@
             const toggleDarkMode = () => {
                 const newDarkMode = !darkMode;
                 setDarkMode(newDarkMode);
-                localStorage.setItem('sl-tracker-darkmode', newDarkMode);
+                try {
+                    localStorage.setItem('sl-tracker-darkmode', newDarkMode);
+                    if (window.cloudStorage && window.cloudStorage.set) {
+                        window.cloudStorage.set('darkMode', newDarkMode).catch(e => console.warn('Cloud save darkMode failed', e));
+                    }
+                } catch (err) {
+                    console.error('Error saving dark mode:', err);
+                }
                 if (newDarkMode) {
                     document.body.classList.add('dark-mode');
                 } else {
@@ -962,6 +1172,9 @@
             useEffect(() => {
                 try {
                     localStorage.setItem('sl-tracker-items', JSON.stringify(items));
+                    if (window.cloudStorage && window.cloudStorage.set) {
+                        window.cloudStorage.set('items', items).catch(e => console.warn('Cloud save items failed', e));
+                    }
                 } catch (error) {
                     console.error('Error saving data:', error);
                 }
@@ -1328,7 +1541,20 @@
                 <div className="min-h-screen pb-8">
                     {/* Header */}
                     <div className="sl-header text-white py-6 px-4 mb-6">
-                        <div className="max-w-7xl mx-auto text-center">
+                        <div className="max-w-7xl mx-auto text-center relative">
+                            <div style={{ position: 'absolute', right: '1rem', top: '1rem' }}>
+                                {authUser && !authUser.isAnonymous ? (
+                                    <div className="flex items-center gap-2 justify-end">
+                                        <span className="text-sm text-blue-100">{authUser.displayName || authUser.email}</span>
+                                        <button onClick={signOutUser} className="ml-2 px-3 py-1 rounded bg-white text-blue-700 font-semibold">Sign out</button>
+                                    </div>
+                                ) : (
+                                    <div className="text-right">
+                                        <button onClick={signInWithGoogle} className="px-3 py-1 rounded bg-white text-blue-700 font-semibold">Sign in with Google</button>
+                                        <div className="text-xs text-blue-100 mt-1">Sign in with Google to sync across your devices.</div>
+                                    </div>
+                                )}
+                            </div>
                             <h1 
                                 className="text-3xl md:text-4xl font-bold mb-2 flex items-center justify-center gap-3 cursor-pointer hover:opacity-80 transition"
                                 onClick={() => { setActiveTab('wishlist'); setShowAddForm(false); setSelectedCustomList(null); }}
