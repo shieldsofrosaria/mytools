@@ -1481,9 +1481,21 @@
                                     <button onClick={handleSignOut} className="ml-2 bg-white/20 hover:bg-white/30 text-white px-2 py-1 rounded text-sm">Sign out</button>
                                 </div>
                             ) : (
-                                <div className="text-sm font-semibold bg-white/10 px-3 py-1 rounded">
-                                    <span className="opacity-70">Not signed in</span>
-                                </div>
+                                <button 
+                                    onClick={() => {
+                                        if (window.firebase && window.firebase.auth) {
+                                            const provider = new window.firebase.auth.GoogleAuthProvider();
+                                            window.firebase.auth().signInWithPopup(provider)
+                                                .then(() => console.log('[Auth] Sign-in successful'))
+                                                .catch(err => alert('Sign-in failed: ' + err.message));
+                                        } else {
+                                            alert('Firebase not loaded. Please refresh the page.');
+                                        }
+                                    }}
+                                    className="text-sm font-semibold bg-white/20 hover:bg-white/30 px-4 py-2 rounded transition"
+                                >
+                                    🔐 Sign in with Google
+                                </button>
                             )}
                         </div>
                         <div className="max-w-7xl mx-auto text-center">
