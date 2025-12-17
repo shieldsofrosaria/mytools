@@ -863,15 +863,24 @@
                         // 2) If firebase SDK is present, use onAuthStateChanged for reliable detection
                         if (window.firebase && window.firebase.auth && typeof window.firebase.auth === 'function') {
                             try {
+                                console.log('[Auth Debug] Firebase SDK detected, setting up onAuthStateChanged');
                                 const auth = window.firebase.auth();
                                 auth.onAuthStateChanged(user => {
-                                    if (user) setAuthUser({ email: user.email || null, name: user.displayName || null, uid: user.uid });
-                                    else setAuthUser(null);
+                                    if (user) {
+                                        console.log('[Auth Debug] User signed in via SDK:', user.email);
+                                        setAuthUser({ email: user.email || null, name: user.displayName || null, uid: user.uid });
+                                    } else {
+                                        console.log('[Auth Debug] No user from SDK');
+                                        setAuthUser(null);
+                                    }
                                 });
                                 return;
                             } catch (e) {
+                                console.warn('[Auth Debug] Firebase SDK error:', e);
                                 // ignore and continue
                             }
+                        } else {
+                            console.log('[Auth Debug] No Firebase SDK found');
                         }
 
                         // 3) Try reading IndexedDB fallback used by newer SDKs (best-effort)
@@ -903,8 +912,10 @@
                         }
 
                         // no auth found
+                        console.log('[Auth Debug] No auth found');
                         setAuthUser(null);
                     } catch (err) {
+                        console.error('[Auth Debug] Error:', err);
                         setAuthUser(null);
                     }
                 };
