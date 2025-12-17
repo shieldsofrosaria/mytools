@@ -834,19 +834,20 @@
             const [authUser, setAuthUser] = useState(null);
 
             useEffect(() => {
-                const findAuthUser = () => {
+                const findAuthUser = async () => {
                     try {
+                        // 1) scan localStorage for common firebase auth keys
                         for (let i = 0; i < localStorage.length; i++) {
                             const key = localStorage.key(i);
                             if (!key) continue;
-                            // firebase stores the current user under keys like 'firebase:authUser:<apiKey>:[DEFAULT]'
-                            if (key.startsWith('firebase:authUser:')) {
+                            const lower = key.toLowerCase();
+                            if (lower.includes('authuser') || lower.includes('firebase:authuser') || lower.includes('firebase-auth')) {
                                 const raw = localStorage.getItem(key);
                                 if (raw) {
                                     try {
                                         const parsed = JSON.parse(raw);
-                                        if (parsed && (parsed.email || parsed.displayName)) {
-                                            setAuthUser({ email: parsed.email, name: parsed.displayName });
+                                        if (parsed && (parsed.email || parsed.displayName || parsed.uid)) {
+                                            setAuthUser({ email: parsed.email || null, name: parsed.displayName || null, uid: parsed.uid || null });
                                             return;
                                         }
                                     } catch (e) {
@@ -855,7 +856,50 @@
                                 }
                             }
                         }
-                        // no firebase auth entry found
+
+                        // 2) If firebase SDK is present, use onAuthStateChanged for reliable detection
+                        if (window.firebase && window.firebase.auth && typeof window.firebase.auth === 'function') {
+                            try {
+                                const auth = window.firebase.auth();
+                                auth.onAuthStateChanged(user => {
+                                    if (user) setAuthUser({ email: user.email || null, name: user.displayName || null, uid: user.uid });
+                                    else setAuthUser(null);
+                                });
+                                return;
+                            } catch (e) {
+                                // ignore and continue
+                            }
+                        }
+
+                        // 3) Try reading IndexedDB fallback used by newer SDKs (best-effort)
+                        try {
+                            const req = indexedDB.open('firebaseLocalStorageDb');
+                            req.onsuccess = function(event) {
+                                try {
+                                    const db = event.target.result;
+                                    const tx = db.transaction(['firebaseLocalStorage'], 'readonly');
+                                    const store = tx.objectStore('firebaseLocalStorage');
+                                    const getAllReq = store.getAll();
+                                    getAllReq.onsuccess = function() {
+                                        const results = getAllReq.result || [];
+                                        for (const entry of results) {
+                                            try {
+                                                const parsed = JSON.parse(entry.value || entry.data || '{}');
+                                                if (parsed && (parsed.email || parsed.displayName || parsed.uid)) {
+                                                    setAuthUser({ email: parsed.email || null, name: parsed.displayName || null, uid: parsed.uid || null });
+                                                    return;
+                                                }
+                                            } catch (e) {}
+                                        }
+                                    };
+                                } catch (e) {}
+                            };
+                            req.onerror = function() { /* ignore */ };
+                        } catch (e) {
+                            // ignore indexedDB errors
+                        }
+
+                        // no auth found
                         setAuthUser(null);
                     } catch (err) {
                         setAuthUser(null);
