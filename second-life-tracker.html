@@ -1058,8 +1058,6 @@
                 return () => {
                     document.removeEventListener('keydown', handleKeyPress);
                     window.removeEventListener('cloud-data', cloudHandler);
-                };
-                    document.removeEventListener('keydown', handleKeyPress);
                     window.removeEventListener('auth-changed', authHandler);
                 };
             }, [showAddForm, bulkMode]);
