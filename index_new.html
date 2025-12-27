@@ -2539,7 +2539,7 @@
                                 </div>
 
                                 {/* Quick Stats */}
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                                <div className={`grid gap-4 mb-6 ${activeTab === 'shopping' ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1 md:grid-cols-3 max-w-3xl mx-auto'}`}>
                                     <div className="stats-card text-center">
                                         <div className="stat-number text-blue-600">
                                             {getItemCount(
