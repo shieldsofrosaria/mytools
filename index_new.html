@@ -982,6 +982,11 @@
             const [globalSearch, setGlobalSearch] = useState('');
             const [showGlobalSearch, setShowGlobalSearch] = useState(false);
 
+            // Undo delete
+            const [recentlyDeleted, setRecentlyDeleted] = useState(null); // {items: [], timestamp: Date}
+            const [showUndoToast, setShowUndoToast] = useState(false);
+            const undoTimerRef = React.useRef(null);
+
             // Authentication UI state: detect firebase auth object in localStorage (works for redirect/compat flows)
             const [authUser, setAuthUser] = useState(null);
             const isLoadingFromCloud = React.useRef(false);
@@ -1537,6 +1542,25 @@
                 }
             };
 
+            const handleDragOver = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            };
+
+            const handleDrop = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const files = e.dataTransfer.files;
+                if (files && files[0] && files[0].type.indexOf('image') !== -1) {
+                    const file = files[0];
+                    setImageFile(file);
+                    const reader = new FileReader();
+                    reader.onload = (e) => setImagePreview(e.target.result);
+                    reader.readAsDataURL(file);
+                }
+            };
+
             const handleSubmit = async (e) => {
                 e.preventDefault();
                 
@@ -2017,7 +2041,20 @@
                             {(activeTab === 'wishlist' || activeTab === 'shopping' || activeTab === 'sort' || activeTab === 'inventory' || activeTab === 'custom') && (
                                 <div className="flex gap-2 flex-wrap">
                                     <button
-                                        onClick={() => setShowAddForm(true)}
+                                        onClick={() => {
+                                            // Set status based on current tab before opening form
+                                            let defaultStatus = STATUSES.WISHLIST;
+                                            if (activeTab === 'shopping') defaultStatus = STATUSES.SHOPPING;
+                                            if (activeTab === 'sort') defaultStatus = STATUSES.SORT;
+                                            if (activeTab === 'inventory') defaultStatus = STATUSES.INVENTORY;
+                                            if (activeTab === 'custom') defaultStatus = STATUSES.WISHLIST; // Custom lists default to wishlist
+                                            
+                                            setFormData({
+                                                ...formData,
+                                                status: defaultStatus
+                                            });
+                                            setShowAddForm(true);
+                                        }}
                                         className="sl-orange-btn py-2 px-4 rounded-lg text-sm flex items-center gap-2 font-semibold"
                                     >
                                         <span>➕</span>
