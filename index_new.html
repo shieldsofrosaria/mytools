@@ -968,7 +968,8 @@
             const [selectedCustomList, setSelectedCustomList] = useState(null);
             
             // Extended fields for Sort/Inventory
-            const [customCategories, setCustomCategories] = useState([]);
+            const [customCategories, setCustomCategories] = useState([]); // Custom categories: [{name, icon, subcategories}]
+            const [additionalSubcategories, setAdditionalSubcategories] = useState({}); // Add subcats to existing: {categoryName: [subcats]}
             const [customHeads, setCustomHeads] = useState([]);
             const [customBodies, setCustomBodies] = useState([]);
             const [customHairstyles, setCustomHairstyles] = useState([]);
@@ -1202,6 +1203,11 @@
                         if (savedLists) {
                             setCustomLists(JSON.parse(savedLists));
                         }
+                        // Load custom categories
+                        const savedCustomCategories = localStorage.getItem('sl-tracker-custom-categories');
+                        if (savedCustomCategories) setCustomCategories(JSON.parse(savedCustomCategories));
+                        const savedAdditionalSubcategories = localStorage.getItem('sl-tracker-additional-subcategories');
+                        if (savedAdditionalSubcategories) setAdditionalSubcategories(JSON.parse(savedAdditionalSubcategories));
                         // Load custom options
                         const savedHeads = localStorage.getItem('sl-tracker-custom-heads');
                         if (savedHeads) setCustomHeads(JSON.parse(savedHeads));
@@ -1263,6 +1269,22 @@
                     console.error('Error saving lists:', error);
                 }
             }, [customLists]);
+
+            useEffect(() => {
+                try {
+                    localStorage.setItem('sl-tracker-custom-categories', JSON.stringify(customCategories));
+                } catch (error) {
+                    console.error('Error saving custom categories:', error);
+                }
+            }, [customCategories]);
+
+            useEffect(() => {
+                try {
+                    localStorage.setItem('sl-tracker-additional-subcategories', JSON.stringify(additionalSubcategories));
+                } catch (error) {
+                    console.error('Error saving additional subcategories:', error);
+                }
+            }, [additionalSubcategories]);
 
             useEffect(() => {
                 try {
@@ -1741,8 +1763,8 @@
             };
 
             const getCategoryIcon = (categoryName) => {
-                const cat = CATEGORIES.find(c => c.name === categoryName);
-                return cat ? cat.icon : '📦';
+                const allCats = getAllCategories();
+                return allCats[categoryName]?.icon || '📦';
             };
 
             const getCategoryClass = (categoryName) => {
@@ -1790,6 +1812,97 @@
                     if (confirm('🚨 This cannot be undone. Are you absolutely sure?')) {
                         setItems([]);
                     }
+                }
+            };
+
+            // Get all categories (default + custom with additional subcategories)
+            const getAllCategories = () => {
+                // Start with default categories
+                const allCategories = { ...CATEGORIES_WITH_SUBCATEGORIES };
+                
+                // Add additional subcategories to existing categories
+                Object.keys(additionalSubcategories).forEach(catName => {
+                    if (allCategories[catName]) {
+                        allCategories[catName] = {
+                            ...allCategories[catName],
+                            subcategories: [
+                                ...allCategories[catName].subcategories,
+                                ...additionalSubcategories[catName]
+                            ]
+                        };
+                    }
+                });
+                
+                // Add custom categories
+                customCategories.forEach(cat => {
+                    allCategories[cat.name] = {
+                        icon: cat.icon,
+                        subcategories: cat.subcategories || []
+                    };
+                });
+                
+                return allCategories;
+            };
+
+            // Category management functions
+            const addCustomCategory = (name, icon) => {
+                if (!name.trim()) return;
+                const newCat = {
+                    name: name.trim(),
+                    icon: icon || '📦',
+                    subcategories: []
+                };
+                setCustomCategories([...customCategories, newCat]);
+            };
+
+            const deleteCustomCategory = (categoryName) => {
+                if (confirm(`🗑️ Delete category "${categoryName}"? Items using this category will keep it in their data.`)) {
+                    setCustomCategories(customCategories.filter(cat => cat.name !== categoryName));
+                }
+            };
+
+            const editCustomCategory = (oldName, newName, newIcon) => {
+                setCustomCategories(customCategories.map(cat => 
+                    cat.name === oldName 
+                        ? { ...cat, name: newName.trim(), icon: newIcon }
+                        : cat
+                ));
+            };
+
+            const addSubcategoryToCategory = (categoryName, subcategory) => {
+                if (!subcategory.trim()) return;
+                
+                // Check if it's a default category
+                if (CATEGORIES_WITH_SUBCATEGORIES[categoryName]) {
+                    // Add to additional subcategories
+                    setAdditionalSubcategories({
+                        ...additionalSubcategories,
+                        [categoryName]: [...(additionalSubcategories[categoryName] || []), subcategory.trim()]
+                    });
+                } else {
+                    // It's a custom category
+                    setCustomCategories(customCategories.map(cat =>
+                        cat.name === categoryName
+                            ? { ...cat, subcategories: [...cat.subcategories, subcategory.trim()] }
+                            : cat
+                    ));
+                }
+            };
+
+            const deleteSubcategory = (categoryName, subcategory) => {
+                // Check if it's from additional subcategories
+                if (additionalSubcategories[categoryName]?.includes(subcategory)) {
+                    setAdditionalSubcategories({
+                        ...additionalSubcategories,
+                        [categoryName]: additionalSubcategories[categoryName].filter(s => s !== subcategory)
+                    });
+                } else {
+                    // It's from a custom category
+                    setCustomCategories(customCategories.map(cat =>
+                        cat.name === categoryName
+                            ? { ...cat, subcategories: cat.subcategories.filter(s => s !== subcategory) }
+                            : cat
+                    ));
                 }
             };
 
@@ -1968,7 +2081,7 @@
                                                     {(item.categorySubcategoryPairs && item.categorySubcategoryPairs.length > 0) ? (
                                                         <div className="mb-2 space-y-1">
                                                             {item.categorySubcategoryPairs.map((pair, idx) => {
-                                                                const catData = CATEGORIES_WITH_SUBCATEGORIES[pair.category];
+                                                                const catData = getAllCategories()[pair.category];
                                                                 return (
                                                                     <div key={idx} className="flex items-center gap-2 flex-wrap">
                                                                         <span className={`category-badge ${getCategoryClass(pair.category)}`}>
@@ -2116,10 +2229,11 @@
                                             <div className="space-y-4">
                                                 {/* Category Selection Grid */}
                                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                                                    {CATEGORIES.map(cat => {
-                                                        const isSelected = formData.categorySubcategoryPairs.some(pair => pair.category === cat.name);
+                                                    {Object.keys(getAllCategories()).map(catName => {
+                                                        const catData = getAllCategories()[catName];
+                                                        const isSelected = formData.categorySubcategoryPairs.some(pair => pair.category === catName);
                                                         return (
-                                                            <label key={cat.name} className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded transition">
+                                                            <label key={catName} className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded transition">
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={isSelected}
@@ -2130,7 +2244,7 @@
                                                                                 ...formData,
                                                                                 categorySubcategoryPairs: [
                                                                                     ...formData.categorySubcategoryPairs,
-                                                                                    { category: cat.name, subcategory: '' }
+                                                                                    { category: catName, subcategory: '' }
                                                                                 ]
                                                                             });
                                                                         } else {
@@ -2138,14 +2252,14 @@
                                                                             setFormData({
                                                                                 ...formData,
                                                                                 categorySubcategoryPairs: formData.categorySubcategoryPairs.filter(
-                                                                                    pair => pair.category !== cat.name
+                                                                                    pair => pair.category !== catName
                                                                                 )
                                                                             });
                                                                         }
                                                                     }}
                                                                     className="bulk-checkbox"
                                                                 />
-                                                                <span className="text-sm text-gray-800">{cat.icon} {cat.name}</span>
+                                                                <span className="text-sm text-gray-800">{catData.icon} {catName}</span>
                                                             </label>
                                                         );
                                                     })}
@@ -2153,7 +2267,7 @@
 
                                                 {/* Subcategory Dropdowns for Selected Categories */}
                                                 {formData.categorySubcategoryPairs.map((pair, index) => {
-                                                    const categoryData = CATEGORIES_WITH_SUBCATEGORIES[pair.category];
+                                                    const categoryData = getAllCategories()[pair.category];
                                                     if (!categoryData || categoryData.subcategories.length === 0) return null;
                                                     
                                                     return (
@@ -2718,9 +2832,12 @@
                                             className="input-field"
                                         >
                                             <option value="">📁 All Categories</option>
-                                            {CATEGORIES.map(cat => (
-                                                <option key={cat.name} value={cat.name}>{cat.icon} {cat.name}</option>
-                                            ))}
+                                            {Object.keys(getAllCategories()).map(catName => {
+                                                const catData = getAllCategories()[catName];
+                                                return (
+                                                    <option key={catName} value={catName}>{catData.icon} {catName}</option>
+                                                );
+                                            })}
                                         </select>
 
                                         <select
@@ -3004,6 +3121,154 @@
                                         🗑️ Clear All Data
                                     </button>
                                 </div>
+
+                                {/* Category & Subcategory Manager */}
+                                <div className="mb-6 border-t-2 border-white/20 pt-6">
+                                    <h3 className="font-bold text-lg mb-3 text-white flex items-center gap-2">
+                                        <span>📁</span>
+                                        <span>Manage Categories & Subcategories</span>
+                                    </h3>
+                                    <p className="text-white/80 mb-4">Add your own categories or add subcategories to existing ones!</p>
+
+                                    {/* Add New Category */}
+                                    <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4 mb-4">
+                                        <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                                            <span>➕</span>
+                                            <span>Add New Category</span>
+                                        </h4>
+                                        <div className="flex gap-2 mb-2">
+                                            <input
+                                                type="text"
+                                                id="newCatIcon"
+                                                placeholder="📦 Emoji"
+                                                className="w-20 input-field text-center text-2xl"
+                                                maxLength="2"
+                                            />
+                                            <input
+                                                type="text"
+                                                id="newCatName"
+                                                placeholder="Category name (e.g., Vehicles)"
+                                                className="flex-1 input-field"
+                                            />
+                                            <button
+                                                onClick={() => {
+                                                    const name = document.getElementById('newCatName').value;
+                                                    const icon = document.getElementById('newCatIcon').value;
+                                                    if (name.trim()) {
+                                                        addCustomCategory(name, icon);
+                                                        document.getElementById('newCatName').value = '';
+                                                        document.getElementById('newCatIcon').value = '';
+                                                    }
+                                                }}
+                                                className="sl-orange-btn px-6 py-2"
+                                            >
+                                                ➕ Add
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Manage Existing Categories */}
+                                    <div className="space-y-3">
+                                        {Object.keys(getAllCategories()).map(catName => {
+                                            const catData = getAllCategories()[catName];
+                                            const isDefault = CATEGORIES_WITH_SUBCATEGORIES[catName] !== undefined;
+                                            const isCustom = customCategories.find(c => c.name === catName);
+                                            
+                                            return (
+                                                <div key={catName} className="product-card p-4">
+                                                    <div className="flex items-center justify-between mb-3">
+                                                        <div className="flex items-center gap-3 flex-1">
+                                                            {isCustom ? (
+                                                                <>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={catData.icon}
+                                                                        onChange={(e) => editCustomCategory(catName, catName, e.target.value)}
+                                                                        className="w-16 text-center text-2xl input-field py-1"
+                                                                        maxLength="2"
+                                                                    />
+                                                                    <input
+                                                                        type="text"
+                                                                        value={catName}
+                                                                        onChange={(e) => editCustomCategory(catName, e.target.value, catData.icon)}
+                                                                        className="flex-1 input-field py-1 font-semibold"
+                                                                    />
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <span className="text-3xl">{catData.icon}</span>
+                                                                    <span className="font-semibold text-white text-lg">{catName}</span>
+                                                                    <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">Default</span>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                        {isCustom && (
+                                                            <>
+                                                                <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded">Custom</span>
+                                                                <button
+                                                                    onClick={() => deleteCustomCategory(catName)}
+                                                                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition"
+                                                                >
+                                                                    🗑️ Delete
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Subcategories */}
+                                                    <div className="pl-4 border-l-2 border-purple-300/30">
+                                                        <p className="text-sm text-white/70 mb-2">Subcategories ({catData.subcategories.length}):</p>
+                                                        
+                                                        {/* Add Subcategory */}
+                                                        <div className="flex gap-2 mb-2">
+                                                            <input
+                                                                type="text"
+                                                                id={`newSubcat-${catName}`}
+                                                                placeholder="New subcategory..."
+                                                                className="flex-1 input-field text-sm py-1"
+                                                            />
+                                                            <button
+                                                                onClick={() => {
+                                                                    const input = document.getElementById(`newSubcat-${catName}`);
+                                                                    if (input.value.trim()) {
+                                                                        addSubcategoryToCategory(catName, input.value);
+                                                                        input.value = '';
+                                                                    }
+                                                                }}
+                                                                className="sl-blue-btn px-3 py-1 text-sm"
+                                                            >
+                                                                ➕
+                                                            </button>
+                                                        </div>
+
+                                                        {/* List Subcategories */}
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {catData.subcategories.map(sub => {
+                                                                const canDelete = isCustom || (additionalSubcategories[catName]?.includes(sub));
+                                                                return (
+                                                                    <div key={sub} className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded text-sm">
+                                                                        <span className="text-white/90">{sub}</span>
+                                                                        {canDelete && (
+                                                                            <button
+                                                                                onClick={() => deleteSubcategory(catName, sub)}
+                                                                                className="text-red-400 hover:text-red-300 ml-1"
+                                                                            >
+                                                                                ✕
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                            {catData.subcategories.length === 0 && (
+                                                                <p className="text-white/50 text-sm italic">No subcategories yet</p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -3043,10 +3308,11 @@
                                         <div className="space-y-4">
                                             {/* Category Selection Grid */}
                                             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                                                {CATEGORIES.map(cat => {
-                                                    const isSelected = formData.categorySubcategoryPairs.some(pair => pair.category === cat.name);
+                                                {Object.keys(getAllCategories()).map(catName => {
+                                                    const catData = getAllCategories()[catName];
+                                                    const isSelected = formData.categorySubcategoryPairs.some(pair => pair.category === catName);
                                                     return (
-                                                        <label key={cat.name} className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded transition">
+                                                        <label key={catName} className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded transition">
                                                             <input
                                                                 type="checkbox"
                                                                 checked={isSelected}
@@ -3056,21 +3322,21 @@
                                                                             ...formData,
                                                                             categorySubcategoryPairs: [
                                                                                 ...formData.categorySubcategoryPairs,
-                                                                                { category: cat.name, subcategory: '' }
+                                                                                { category: catName, subcategory: '' }
                                                                             ]
                                                                         });
                                                                     } else {
                                                                         setFormData({
                                                                             ...formData,
                                                                             categorySubcategoryPairs: formData.categorySubcategoryPairs.filter(
-                                                                                pair => pair.category !== cat.name
+                                                                                pair => pair.category !== catName
                                                                             )
                                                                         });
                                                                     }
                                                                 }}
                                                                 className="bulk-checkbox"
                                                             />
-                                                            <span className="text-sm text-gray-800">{cat.icon} {cat.name}</span>
+                                                            <span className="text-sm text-gray-800">{catData.icon} {catName}</span>
                                                         </label>
                                                     );
                                                 })}
@@ -3078,7 +3344,7 @@
 
                                             {/* Subcategory Dropdowns for Selected Categories */}
                                             {formData.categorySubcategoryPairs.map((pair, index) => {
-                                                const categoryData = CATEGORIES_WITH_SUBCATEGORIES[pair.category];
+                                                const categoryData = getAllCategories()[pair.category];
                                                 if (!categoryData || categoryData.subcategories.length === 0) return null;
                                                 
                                                 return (
