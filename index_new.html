@@ -1382,11 +1382,16 @@
                 setSelectedItems([]);
             };
 
+            // ✅ FIXED FUNCTION #1: bulkDelete
             const bulkDelete = async () => {
                 if (confirm(`🗑️ Delete ${selectedItems.length} items?`)) {
                     const newItems = items.filter(item => !selectedItems.includes(item.id));
+                    const oldItems = [...items]; // Backup for error recovery
                     
-                    // Sync to Firestore immediately if user is signed in
+                    // ✅ Update UI immediately (optimistic update)
+                    setItems(newItems);
+                    
+                    // Sync to Firestore if user is signed in
                     if (authUser && authUser.uid) {
                         try {
                             isManualSync.current = true;
@@ -1396,15 +1401,14 @@
                                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                             }, { merge: true });
                             console.log('[Firestore] Bulk delete synced');
-                            setItems(newItems);
+                            // ✅ Do NOT call setItems again here
                         } catch (err) {
                             console.error('[Firestore] Bulk delete sync error:', err);
                             alert('Failed to delete from cloud. Please try again.');
+                            setItems(oldItems); // ✅ Restore on error
                             isManualSync.current = false;
                             return;
                         }
-                    } else {
-                        setItems(newItems);
                     }
                     
                     setSelectedItems([]);
@@ -1412,12 +1416,17 @@
                 }
             };
 
+            // ✅ FIXED FUNCTION #2: bulkMoveTo
             const bulkMoveTo = async (newStatus) => {
                 const newItems = items.map(item =>
                     selectedItems.includes(item.id) ? { ...item, status: newStatus } : item
                 );
+                const oldItems = [...items]; // Backup for error recovery
                 
-                // Sync to Firestore immediately if user is signed in
+                // ✅ Update UI immediately (optimistic update)
+                setItems(newItems);
+                
+                // Sync to Firestore if user is signed in
                 if (authUser && authUser.uid) {
                     try {
                         isManualSync.current = true;
@@ -1427,15 +1436,14 @@
                             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                         }, { merge: true });
                         console.log('[Firestore] Bulk move synced');
-                        setItems(newItems);
+                        // ✅ Do NOT call setItems again here
                     } catch (err) {
                         console.error('[Firestore] Bulk move sync error:', err);
                         alert('Failed to sync to cloud. Please try again.');
+                        setItems(oldItems); // ✅ Restore on error
                         isManualSync.current = false;
                         return;
                     }
-                } else {
-                    setItems(newItems);
                 }
                 
                 setSelectedItems([]);
@@ -1582,30 +1590,32 @@
                 }
             };
 
+            // ✅ FIXED FUNCTION #3: deleteItem
             const deleteItem = async (id) => {
                 if (confirm('🗑️ Are you sure you want to delete this item?')) {
                     const newItems = items.filter(item => item.id !== id);
+                    const oldItems = [...items]; // Backup for error recovery
                     
-                    // Sync to Firestore immediately if user is signed in
+                    // ✅ Update UI immediately (optimistic update)
+                    setItems(newItems);
+                    
+                    // Sync to Firestore if user is signed in
                     if (authUser && authUser.uid) {
                         try {
-                            isManualSync.current = true; // Prevent useEffect from syncing again
+                            isManualSync.current = true;
                             const db = firebase.firestore();
                             await db.collection('users').doc(authUser.uid).set({
                                 items: newItems,
                                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                             }, { merge: true });
                             console.log('[Firestore] Item deleted and synced');
-                            // Update local state after successful Firebase sync
-                            setItems(newItems);
+                            // ✅ Do NOT call setItems again here
                         } catch (err) {
                             console.error('[Firestore] Delete sync error:', err);
                             alert('Failed to delete from cloud. Please try again.');
-                            isManualSync.current = false; // Reset flag on error
+                            setItems(oldItems); // ✅ Restore on error
+                            isManualSync.current = false;
                         }
-                    } else {
-                        // No Firebase auth, just update local state
-                        setItems(newItems);
                     }
                 }
             };
