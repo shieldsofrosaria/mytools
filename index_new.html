@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Second Life Shopping Tracker</title>
+    <title>Second Life Inventory Portal</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -66,7 +66,7 @@
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #1a0b2e 0%, #2d1b4e 50%, #1a0b2e 100%);
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
             min-height: 100vh;
             color: #ffffff;
             line-height: 1.6;
@@ -81,11 +81,11 @@
             position: fixed;
             inset: 0;
             background-image: 
-                radial-gradient(circle at 15% 20%, rgba(255, 110, 196, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(0, 212, 255, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 50% 60%, rgba(157, 78, 221, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 30% 80%, rgba(255, 154, 86, 0.1) 0%, transparent 35%),
-                radial-gradient(circle at 70% 85%, rgba(199, 125, 255, 0.12) 0%, transparent 35%);
+                radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(200, 200, 200, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 50% 60%, rgba(150, 150, 150, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 30% 80%, rgba(180, 180, 180, 0.04) 0%, transparent 35%),
+                radial-gradient(circle at 70% 85%, rgba(220, 220, 220, 0.06) 0%, transparent 35%);
             pointer-events: none;
             z-index: 0;
             animation: floatOrbs 20s ease-in-out infinite;
@@ -105,7 +105,7 @@
             width: 300px;
             height: 300px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 110, 196, 0.4), transparent 70%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15), transparent 70%);
             filter: blur(60px);
             top: 20%;
             right: 10%;
@@ -127,17 +127,17 @@
         /* Vibrant Glassmorphic Cards with 3D Stack Effect */
         .product-card {
             background: linear-gradient(135deg, 
-                rgba(255, 110, 196, 0.1) 0%,
-                rgba(157, 78, 221, 0.08) 50%,
-                rgba(0, 212, 255, 0.1) 100%);
+                rgba(255, 255, 255, 0.08) 0%,
+                rgba(200, 200, 200, 0.05) 50%,
+                rgba(255, 255, 255, 0.08) 100%);
             backdrop-filter: blur(30px) saturate(180%);
             -webkit-backdrop-filter: blur(30px) saturate(180%);
-            border: 2px solid rgba(255, 110, 196, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.15);
             border-radius: 20px;
             box-shadow: 
                 0 8px 32px rgba(0, 0, 0, 0.4),
                 inset 0 1px 0 rgba(255, 255, 255, 0.15),
-                0 0 40px rgba(157, 78, 221, 0.1);
+                0 0 40px rgba(255, 255, 255, 0.05);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
@@ -149,8 +149,8 @@
             position: absolute;
             inset: -4px;
             background: linear-gradient(135deg, 
-                rgba(0, 212, 255, 0.2), 
-                rgba(255, 154, 86, 0.2));
+                rgba(255, 255, 255, 0.12), 
+                rgba(200, 200, 200, 0.12));
             border-radius: 20px;
             z-index: -1;
             opacity: 0;
@@ -162,9 +162,9 @@
             position: absolute;
             inset: 0;
             background: linear-gradient(135deg, 
-                rgba(255, 110, 196, 0.15) 0%, 
+                rgba(255, 255, 255, 0.08) 0%, 
                 transparent 50%, 
-                rgba(0, 212, 255, 0.15) 100%);
+                rgba(255, 255, 255, 0.08) 100%);
             opacity: 0;
             transition: opacity 0.4s;
             pointer-events: none;
@@ -173,8 +173,8 @@
         .product-card:hover {
             transform: translateY(-8px);
             box-shadow: 
-                0 20px 60px rgba(255, 110, 196, 0.3),
-                0 0 60px rgba(157, 78, 221, 0.2),
+                0 20px 60px rgba(255, 255, 255, 0.15),
+                0 0 60px rgba(255, 255, 255, 0.1),
                 inset 0 1px 0 rgba(255, 255, 255, 0.25);
         }
 
@@ -195,7 +195,7 @@
             border-radius: 28px;
             box-shadow: 
                 0 8px 32px rgba(0, 0, 0, 0.4),
-                0 0 80px rgba(255, 110, 196, 0.15);
+                0 0 80px rgba(255, 255, 255, 0.08);
             padding: 40px;
             margin-bottom: 32px;
         }
@@ -204,21 +204,21 @@
             font-size: 2.75rem;
             font-weight: 900;
             background: linear-gradient(135deg, 
-                #ff6ec4 0%, 
-                #c77dff 30%,
-                #00d4ff 60%,
-                #ff9a56 100%);
+                #ffffff 0%, 
+                #cccccc 30%,
+                #999999 60%,
+                #dddddd 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             letter-spacing: -0.03em;
-            filter: drop-shadow(0 4px 12px rgba(255, 110, 196, 0.4));
+            filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.2));
             animation: shimmerGradient 8s ease-in-out infinite;
         }
 
         @keyframes shimmerGradient {
-            0%, 100% { filter: drop-shadow(0 4px 12px rgba(255, 110, 196, 0.4)); }
-            50% { filter: drop-shadow(0 4px 12px rgba(0, 212, 255, 0.4)); }
+            0%, 100% { filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.2)); }
+            50% { filter: drop-shadow(0 4px 12px rgba(200, 200, 200, 0.2)); }
         }
 
         h2, h3 {
@@ -233,10 +233,10 @@
 
         /* Colorful Gradient Buttons */
         .sl-orange-btn, .sl-blue-btn {
-            padding: 14px 32px;
-            border-radius: 16px;
+            padding: 10px 18px;
+            border-radius: 14px;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 13px;
             border: none;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -247,31 +247,31 @@
         }
 
         .sl-orange-btn {
-            background: linear-gradient(135deg, #ff6ec4 0%, #ff2eb8 100%);
-            box-shadow: 0 8px 24px rgba(255, 110, 196, 0.4);
+            background: linear-gradient(135deg, #666666 0%, #444444 100%);
+            box-shadow: 0 8px 24px rgba(100, 100, 100, 0.4);
         }
 
         .sl-orange-btn:hover {
             transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 12px 36px rgba(255, 110, 196, 0.5);
+            box-shadow: 0 12px 36px rgba(120, 120, 120, 0.5);
         }
 
         .sl-blue-btn {
-            background: linear-gradient(135deg, #00d4ff 0%, #0080ff 100%);
-            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.4);
+            background: linear-gradient(135deg, #888888 0%, #555555 100%);
+            box-shadow: 0 8px 24px rgba(120, 120, 120, 0.4);
         }
 
         .sl-blue-btn:hover {
             transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 12px 36px rgba(0, 212, 255, 0.5);
+            box-shadow: 0 12px 36px rgba(140, 140, 140, 0.5);
         }
 
         /* Colorful Tabs */
         .tab-btn {
-            padding: 16px 32px;
-            border-radius: 16px 16px 0 0;
+            padding: 10px 16px;
+            border-radius: 14px 14px 0 0;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 13px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             border: none;
@@ -281,15 +281,15 @@
 
         .tab-active {
             background: linear-gradient(135deg, 
-                rgba(255, 110, 196, 0.15) 0%,
-                rgba(157, 78, 221, 0.15) 100%);
+                rgba(255, 255, 255, 0.12) 0%,
+                rgba(200, 200, 200, 0.12) 100%);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             color: #ffffff;
-            border: 1.5px solid rgba(255, 110, 196, 0.3);
-            border-bottom: 3px solid #ff6ec4;
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 3px solid #ffffff;
             box-shadow: 
-                0 -4px 20px rgba(255, 110, 196, 0.2),
+                0 -4px 20px rgba(255, 255, 255, 0.15),
                 inset 0 1px 0 rgba(255, 255, 255, 0.15);
         }
 
@@ -301,9 +301,9 @@
         }
 
         .tab-inactive:hover {
-            background: rgba(255, 110, 196, 0.1);
+            background: rgba(255, 255, 255, 0.08);
             color: #ffffff;
-            border-color: rgba(255, 110, 196, 0.2);
+            border-color: rgba(255, 255, 255, 0.15);
         }
 
         /* Glass Input Fields */
@@ -322,10 +322,10 @@
 
         .input-field:focus {
             outline: none;
-            border-color: #ff6ec4;
+            border-color: #cccccc;
             box-shadow: 
-                0 0 0 4px rgba(255, 110, 196, 0.15),
-                0 4px 12px rgba(255, 110, 196, 0.2);
+                0 0 0 4px rgba(255, 255, 255, 0.1),
+                0 4px 12px rgba(255, 255, 255, 0.15);
             background: rgba(255, 255, 255, 0.08);
         }
 
@@ -353,11 +353,11 @@
         /* Vibrant Stats Cards with 3D Stack */
         .stats-card {
             background: linear-gradient(135deg, 
-                rgba(255, 110, 196, 0.08) 0%,
-                rgba(157, 78, 221, 0.08) 100%);
+                rgba(255, 255, 255, 0.08) 0%,
+                rgba(200, 200, 200, 0.08) 100%);
             backdrop-filter: blur(25px) saturate(180%);
             -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border: 2px solid rgba(255, 110, 196, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.15);
             border-radius: 18px;
             padding: 28px;
             box-shadow: 
@@ -376,7 +376,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, #ff6ec4, #00d4ff, #ff9a56);
+            background: linear-gradient(90deg, #ffffff, #cccccc, #999999);
             opacity: 0;
             transition: opacity 0.3s;
         }
@@ -387,8 +387,8 @@
             position: absolute;
             inset: -3px;
             background: linear-gradient(135deg, 
-                rgba(255, 110, 196, 0.2), 
-                rgba(0, 212, 255, 0.2));
+                rgba(255, 255, 255, 0.12), 
+                rgba(200, 200, 200, 0.12));
             border-radius: 18px;
             z-index: -1;
             opacity: 0;
@@ -398,7 +398,7 @@
         .stats-card:hover {
             transform: translateY(-4px);
             box-shadow: 
-                0 16px 48px rgba(255, 110, 196, 0.25),
+                0 16px 48px rgba(255, 255, 255, 0.15),
                 inset 0 1px 0 rgba(255, 255, 255, 0.25);
         }
 
@@ -415,7 +415,7 @@
             font-weight: 900;
             letter-spacing: -0.03em;
             margin-bottom: 8px;
-            background: linear-gradient(135deg, #ff6ec4, #00d4ff);
+            background: linear-gradient(135deg, #ffffff, #cccccc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -441,8 +441,8 @@
             border: 1.5px solid rgba(255, 255, 255, 0.2);
             letter-spacing: -0.005em;
             background: linear-gradient(135deg, 
-                rgba(255, 110, 196, 0.2) 0%,
-                rgba(157, 78, 221, 0.2) 100%);
+                rgba(255, 255, 255, 0.12) 0%,
+                rgba(200, 200, 200, 0.12) 100%);
         }
 
         /* Colorful Tag Chips */
@@ -451,9 +451,9 @@
             border-radius: 10px;
             font-size: 12px;
             font-weight: 600;
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(157, 78, 221, 0.2));
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(200, 200, 200, 0.12));
             color: #ffffff;
-            border: 1.5px solid rgba(0, 212, 255, 0.3);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
             display: inline-block;
         }
 
@@ -473,15 +473,15 @@
 
         .modal-content {
             background: linear-gradient(135deg, 
-                rgba(255, 110, 196, 0.08) 0%,
-                rgba(157, 78, 221, 0.08) 100%);
+                rgba(255, 255, 255, 0.08) 0%,
+                rgba(200, 200, 200, 0.08) 100%);
             backdrop-filter: blur(40px) saturate(180%);
             -webkit-backdrop-filter: blur(40px) saturate(180%);
             border: 1.5px solid rgba(255, 255, 255, 0.2);
             border-radius: 32px;
             box-shadow: 
                 0 24px 64px rgba(0, 0, 0, 0.6),
-                0 0 100px rgba(255, 110, 196, 0.2);
+                0 0 100px rgba(255, 255, 255, 0.1);
             max-width: 650px;
             width: 100%;
             max-height: 90vh;
@@ -500,14 +500,14 @@
         }
 
         .modal-content::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #ff6ec4, #00d4ff);
+            background: linear-gradient(180deg, #ffffff, #cccccc);
             border-radius: 10px;
             border: 2px solid transparent;
             background-clip: padding-box;
         }
 
         .modal-content::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #ff2eb8, #0080ff);
+            background: linear-gradient(180deg, #eeeeee, #999999);
             background-clip: padding-box;
         }
 
@@ -518,16 +518,16 @@
             left: 50%;
             transform: translateX(-50%);
             background: linear-gradient(135deg, 
-                rgba(255, 110, 196, 0.15) 0%,
-                rgba(157, 78, 221, 0.15) 100%);
+                rgba(255, 255, 255, 0.12) 0%,
+                rgba(200, 200, 200, 0.12) 100%);
             backdrop-filter: blur(30px) saturate(180%);
             -webkit-backdrop-filter: blur(30px) saturate(180%);
-            border: 2px solid rgba(255, 110, 196, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             padding: 16px 24px;
             border-radius: 50px;
             box-shadow: 
-                0 12px 48px rgba(255, 110, 196, 0.4),
-                0 0 80px rgba(157, 78, 221, 0.2),
+                0 12px 48px rgba(255, 255, 255, 0.2),
+                0 0 80px rgba(255, 255, 255, 0.1),
                 inset 0 1px 0 rgba(255, 255, 255, 0.2);
             display: flex;
             gap: 10px;
@@ -557,14 +557,14 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #ff6ec4, #00d4ff);
+            background: linear-gradient(180deg, #ffffff, #cccccc);
             border-radius: 8px;
             border: 3px solid transparent;
             background-clip: padding-box;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #ff2eb8, #0080ff);
+            background: linear-gradient(180deg, #eeeeee, #999999);
             background-clip: padding-box;
         }
 
@@ -591,7 +591,7 @@
         }
 
         .bg-purple-50 {
-            background: rgba(255, 110, 196, 0.1) !important;
+            background: rgba(255, 255, 255, 0.08) !important;
         }
 
         .text-purple-900,
@@ -604,7 +604,7 @@
         }
 
         .bg-blue-50 {
-            background: rgba(0, 212, 255, 0.08) !important;
+            background: rgba(255, 255, 255, 0.06) !important;
         }
 
         .border-gray-200 {
@@ -617,7 +617,7 @@
 
         .border-blue-500,
         .border-purple-500 {
-            border-color: #ff6ec4 !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
         }
 
         .hover\:bg-gray-100:hover {
@@ -629,7 +629,7 @@
             width: 20px;
             height: 20px;
             cursor: pointer;
-            accent-color: #ff6ec4;
+            accent-color: #999999;
             -webkit-appearance: auto;
             appearance: auto;
         }
@@ -645,7 +645,7 @@
             font-size: 80px;
             margin-bottom: 24px;
             opacity: 0.8;
-            filter: drop-shadow(0 0 20px rgba(255, 110, 196, 0.4));
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
         }
 
         .empty-state h3 {
@@ -663,15 +663,15 @@
 
         /* Keyboard shortcuts */
         kbd {
-            background: rgba(255, 110, 196, 0.15);
-            border: 1.5px solid rgba(255, 110, 196, 0.3);
+            background: rgba(255, 255, 255, 0.12);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
             padding: 4px 8px;
             border-radius: 8px;
             font-family: 'Inter', monospace;
             font-weight: 600;
             font-size: 0.875rem;
             color: #ffffff;
-            box-shadow: 0 2px 8px rgba(255, 110, 196, 0.2);
+            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
         }
 
         /* Ensure strong and semibold text is visible */
@@ -681,13 +681,13 @@
 
         /* Links */
         a {
-            color: #ff6ec4;
+            color: #cccccc;
             text-decoration: none;
             transition: color 0.2s;
         }
 
         a:hover {
-            color: #00d4ff;
+            color: #ffffff;
             text-decoration: underline;
         }
 
@@ -733,13 +733,13 @@
             }
 
             .tab-btn {
-                padding: 12px 24px;
-                font-size: 14px;
+                padding: 10px 16px;
+                font-size: 13px;
             }
 
             .sl-orange-btn, .sl-blue-btn {
-                padding: 12px 24px;
-                font-size: 14px;
+                padding: 10px 18px;
+                font-size: 13px;
             }
 
             .input-field {
@@ -924,7 +924,7 @@
 
         function App() {
             const [items, setItems] = useState([]);
-            const [activeTab, setActiveTab] = useState('wishlist');
+            const [activeTab, setActiveTab] = useState('dashboard'); // Changed default to dashboard
             const [formData, setFormData] = useState({
                 name: '',
                 store: '',
@@ -940,6 +940,7 @@
                 link: '',
                 landmark: '',
                 image: '',
+                priority: '', // NEW: 'high', 'medium', 'low', or ''
                 // Extended fields for Sort/Inventory
                 color: '',
                 head: '',
@@ -981,6 +982,15 @@
             const [bulkMode, setBulkMode] = useState(false);
             const [globalSearch, setGlobalSearch] = useState('');
             const [showGlobalSearch, setShowGlobalSearch] = useState(false);
+
+            // View options
+            const [compactView, setCompactView] = useState(false);
+            const [filterPriority, setFilterPriority] = useState(''); // 'high', 'medium', 'low', or ''
+
+            // Dashboard features
+            const [reminders, setReminders] = useState([]); // {id, title, date, notes, link, createdAt}
+            const [showReminderForm, setShowReminderForm] = useState(false);
+            const [editingReminder, setEditingReminder] = useState(null);
 
             // Undo delete
             const [recentlyDeleted, setRecentlyDeleted] = useState(null); // {items: [], timestamp: Date}
@@ -1213,6 +1223,9 @@
                         if (savedCustomCategories) setCustomCategories(JSON.parse(savedCustomCategories));
                         const savedAdditionalSubcategories = localStorage.getItem('sl-tracker-additional-subcategories');
                         if (savedAdditionalSubcategories) setAdditionalSubcategories(JSON.parse(savedAdditionalSubcategories));
+                        // Load reminders
+                        const savedReminders = localStorage.getItem('sl-tracker-reminders');
+                        if (savedReminders) setReminders(JSON.parse(savedReminders));
                         // Load custom options
                         const savedHeads = localStorage.getItem('sl-tracker-custom-heads');
                         if (savedHeads) setCustomHeads(JSON.parse(savedHeads));
@@ -1290,6 +1303,14 @@
                     console.error('Error saving additional subcategories:', error);
                 }
             }, [additionalSubcategories]);
+
+            useEffect(() => {
+                try {
+                    localStorage.setItem('sl-tracker-reminders', JSON.stringify(reminders));
+                } catch (error) {
+                    console.error('Error saving reminders:', error);
+                }
+            }, [reminders]);
 
             useEffect(() => {
                 try {
@@ -1568,6 +1589,26 @@
             const handleSubmit = async (e) => {
                 e.preventDefault();
                 
+                // Check for duplicates (only when adding new items, not editing)
+                if (!editingId) {
+                    const potentialDuplicate = items.find(item => 
+                        item.name.toLowerCase().trim() === formData.name.toLowerCase().trim() &&
+                        item.store.toLowerCase().trim() === formData.store.toLowerCase().trim()
+                    );
+                    
+                    if (potentialDuplicate) {
+                        const confirmAdd = confirm(
+                            `⚠️ Possible Duplicate Detected!\n\n` +
+                            `An item with the same name and creator already exists:\n` +
+                            `"${potentialDuplicate.name}" from ${potentialDuplicate.store}\n\n` +
+                            `Do you still want to add this item?`
+                        );
+                        if (!confirmAdd) {
+                            return; // Cancel adding
+                        }
+                    }
+                }
+                
                 let imageUrl = formData.image;
                 
                 if (imageFile) {
@@ -1620,6 +1661,7 @@
                     link: '',
                     landmark: '',
                     image: '',
+                    priority: '',
                     // Extended fields
                     color: '',
                     head: '',
@@ -1690,6 +1732,7 @@
                     link: item.link,
                     landmark: item.landmark,
                     image: item.image,
+                    priority: item.priority || '',
                     // Extended fields
                     color: item.color || '',
                     head: item.head || '',
@@ -1745,10 +1788,84 @@
                 }
             };
 
+            // Reminder management
+            const addReminder = (reminderData) => {
+                const newReminder = {
+                    id: Date.now(),
+                    ...reminderData,
+                    createdAt: new Date().toISOString()
+                };
+                setReminders([...reminders, newReminder]);
+            };
+
+            const updateReminder = (id, reminderData) => {
+                setReminders(reminders.map(r => r.id === id ? { ...r, ...reminderData } : r));
+            };
+
+            const deleteReminder = (id) => {
+                if (confirm('🗑️ Delete this reminder?')) {
+                    setReminders(reminders.filter(r => r.id !== id));
+                }
+            };
+
+            const getUpcomingReminders = () => {
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+                
+                return reminders
+                    .filter(r => r.date)
+                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .map(r => {
+                        const reminderDate = new Date(r.date);
+                        const isToday = reminderDate.getTime() === today.getTime();
+                        const isThisWeek = reminderDate >= today && reminderDate <= weekFromNow;
+                        const isPast = reminderDate < today;
+                        
+                        return { ...r, isToday, isThisWeek, isPast };
+                    });
+            };
+
+            const getMonthlySpending = () => {
+                const now = new Date();
+                const currentMonth = now.getMonth();
+                const currentYear = now.getFullYear();
+                
+                const thisMonthPurchases = items.filter(item => {
+                    if (!item.purchaseDate) return false;
+                    const purchaseDate = new Date(item.purchaseDate);
+                    return purchaseDate.getMonth() === currentMonth && 
+                           purchaseDate.getFullYear() === currentYear;
+                });
+                
+                const total = thisMonthPurchases.reduce((sum, item) => 
+                    sum + (parseFloat(item.purchasePrice) || 0), 0);
+                
+                return { total, count: thisMonthPurchases.length, items: thisMonthPurchases };
+            };
+
+            const getRecentPurchases = (limit = 5) => {
+                return items
+                    .filter(item => item.purchaseDate)
+                    .sort((a, b) => new Date(b.purchaseDate) - new Date(a.purchaseDate))
+                    .slice(0, limit);
+            };
+
             const updateStatus = (id, newStatus) => {
-                setItems(items.map(item => 
-                    item.id === id ? { ...item, status: newStatus, updatedAt: new Date().toISOString() } : item
-                ));
+                setItems(items.map(item => {
+                    if (item.id === id) {
+                        const updatedItem = { ...item, status: newStatus, updatedAt: new Date().toISOString() };
+                        
+                        // Track purchase when moving to Inventory
+                        if (newStatus === STATUSES.INVENTORY && item.status !== STATUSES.INVENTORY) {
+                            updatedItem.purchaseDate = new Date().toISOString();
+                            updatedItem.purchasePrice = item.price || 0;
+                        }
+                        
+                        return updatedItem;
+                    }
+                    return item;
+                }));
             };
 
             const getFilteredItems = () => {
@@ -1788,11 +1905,15 @@
                             item.notes.toLowerCase().includes(searchTerm.toLowerCase());
                         const matchesCategory = filterCategory === '' || item.category === filterCategory;
                         const matchesCreator = filterCreator === '' || item.store === filterCreator;
+                        const matchesPriority = filterPriority === '' || item.priority === filterPriority;
                         
-                        return matchesStatus && matchesSearch && matchesCategory && matchesCreator;
+                        return matchesStatus && matchesSearch && matchesCategory && matchesCreator && matchesPriority;
                     }
                     
-                    return matchesStatus && notInCustomList;
+                    // Apply priority filter to all tabs
+                    const matchesPriority = filterPriority === '' || item.priority === filterPriority;
+                    
+                    return matchesStatus && notInCustomList && matchesPriority;
                 });
                 
                 return sortItems(filtered);
@@ -1815,6 +1936,10 @@
                         return sorted.sort((a, b) => (parseFloat(a.price) || 0) - (parseFloat(b.price) || 0));
                     case 'priceHigh':
                         return sorted.sort((a, b) => (parseFloat(b.price) || 0) - (parseFloat(a.price) || 0));
+                    case 'priority':
+                        // Sort: high -> medium -> low -> (no priority)
+                        const priorityOrder = { high: 1, medium: 2, low: 3, '': 4 };
+                        return sorted.sort((a, b) => (priorityOrder[a.priority || ''] || 4) - (priorityOrder[b.priority || ''] || 4));
                     default:
                         return sorted;
                 }
@@ -1841,6 +1966,18 @@
 
             const getCategoryClass = (categoryName) => {
                 return 'category-' + categoryName.replace(/[^a-zA-Z]/g, '-');
+            };
+
+            const getPriorityBadge = (priority) => {
+                if (!priority) return null;
+                
+                const badges = {
+                    high: { emoji: '🔴', text: 'High Priority', class: 'bg-red-500/20 text-red-300 border-red-500/50' },
+                    medium: { emoji: '🟡', text: 'Medium Priority', class: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50' },
+                    low: { emoji: '🟢', text: 'Low Priority', class: 'bg-green-500/20 text-green-300 border-green-500/50' }
+                };
+                
+                return badges[priority] || null;
             };
 
             const getStatusBadgeClass = (status) => {
@@ -2010,10 +2147,10 @@
                         <div className="max-w-6xl mx-auto text-center">
                             <h1 
                                 className="text-3xl md:text-4xl font-bold mb-2 flex items-center justify-center gap-3 cursor-pointer hover:opacity-80 transition"
-                                onClick={() => { setActiveTab('wishlist'); setShowAddForm(false); setSelectedCustomList(null); }}
+                                onClick={() => { setActiveTab('dashboard'); setShowAddForm(false); setSelectedCustomList(null); }}
                             >
                                 <span style={{background: 'none', WebkitTextFillColor: 'currentColor', color: '#ffffff'}}>🛍️</span>
-                                <span>Second Life Shopping Tracker</span>
+                                <span>Second Life Inventory Portal</span>
                             </h1>
                             <p className="text-blue-100 text-lg mb-4">Track your wishlist, shopping & inventory! ✨</p>
                             
@@ -2047,6 +2184,12 @@
                         <div className="product-card p-3 mb-6 flex items-center justify-between gap-4 flex-wrap">
                             {/* Left: Main Navigation Tabs */}
                             <div className="flex gap-2 flex-wrap">
+                                <button
+                                    onClick={() => { setActiveTab('dashboard'); setShowAddForm(false); setSelectedCustomList(null); }}
+                                    className={`tab-btn ${activeTab === 'dashboard' ? 'tab-active' : 'tab-inactive'}`}
+                                >
+                                    📊 Dashboard
+                                </button>
                                 <button
                                     onClick={() => { setActiveTab('wishlist'); setShowAddForm(false); setSelectedCustomList(null); }}
                                     className={`tab-btn ${activeTab === 'wishlist' ? 'tab-active' : 'tab-inactive'}`}
@@ -2110,7 +2253,7 @@
                                     </button>
                                     <button
                                         onClick={() => setBulkMode(!bulkMode)}
-                                        className={`${bulkMode ? 'bg-green-500 hover:bg-green-600' : 'bg-purple-500 hover:bg-purple-600'} text-white py-2 px-4 rounded-lg text-sm flex items-center gap-2 font-semibold transition`}
+                                        className={`${bulkMode ? 'bg-white/30 hover:bg-white/40' : 'bg-white/20 hover:bg-white/25'} text-white py-2 px-4 rounded-lg text-sm flex items-center gap-2 font-semibold transition`}
                                     >
                                         <span>{bulkMode ? '✅' : '☑️'}</span>
                                         <span>{bulkMode ? 'Exit' : 'Bulk'}</span>
@@ -2118,6 +2261,261 @@
                                 </div>
                             )}
                         </div>
+
+                        {/* Dashboard Tab */}
+                        {activeTab === 'dashboard' && (
+                            <div>
+                                {/* Welcome & Quick Stats */}
+                                <div className="product-card p-6 mb-6">
+                                    <h2 className="text-3xl font-bold mb-2 text-white flex items-center gap-2">
+                                        <span>👋</span>
+                                        <span>Welcome to Your Dashboard!</span>
+                                    </h2>
+                                    <p className="text-white/80 text-lg">Your Second Life shopping command center ✨</p>
+                                </div>
+
+                                {/* Quick Stats Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                    <div className="stats-card">
+                                        <div className="stat-number">{getItemCount(STATUSES.WISHLIST)}</div>
+                                        <div className="stat-label">⭐ Wishlist Items</div>
+                                    </div>
+                                    <div className="stats-card">
+                                        <div className="stat-number">{getItemCount(STATUSES.SHOPPING)}</div>
+                                        <div className="stat-label">🛒 Shopping List</div>
+                                    </div>
+                                    <div className="stats-card">
+                                        <div className="stat-number">{getItemCount(STATUSES.INVENTORY)}</div>
+                                        <div className="stat-label">✅ In Inventory</div>
+                                    </div>
+                                    <div className="stats-card">
+                                        <div className="stat-number">{items.length}</div>
+                                        <div className="stat-label">📦 Total Items</div>
+                                    </div>
+                                </div>
+
+                                {/* Monthly Spending Tracker */}
+                                <div className="product-card p-6 mb-6">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                                            <span>💰</span>
+                                            <span>This Month's Spending</span>
+                                        </h2>
+                                        <div className="text-sm text-white/70">
+                                            {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                                        </div>
+                                    </div>
+
+                                    <div className="text-center mb-6">
+                                        <div className="text-5xl font-bold mb-2" style={{
+                                            background: 'linear-gradient(135deg, #ffffff, #cccccc)',
+                                            WebkitBackgroundClip: 'text',
+                                            WebkitTextFillColor: 'transparent'
+                                        }}>
+                                            L$ {getMonthlySpending().total.toLocaleString()}
+                                        </div>
+                                        <div className="text-white/80 text-lg">
+                                            {getMonthlySpending().count} {getMonthlySpending().count === 1 ? 'purchase' : 'purchases'} this month
+                                        </div>
+                                    </div>
+
+                                    {/* Recent Purchases */}
+                                    {getRecentPurchases(3).length > 0 && (
+                                        <div>
+                                            <h3 className="font-bold text-white mb-3 flex items-center gap-2">
+                                                <span>🛍️</span>
+                                                <span>Recent Purchases</span>
+                                            </h3>
+                                            <div className="space-y-2">
+                                                {getRecentPurchases(3).map(item => (
+                                                    <div key={item.id} className="bg-white/5 p-3 rounded-lg flex items-center justify-between">
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="font-semibold text-white truncate">{item.name}</p>
+                                                            <p className="text-sm text-white/60">{new Date(item.purchaseDate).toLocaleDateString()}</p>
+                                                        </div>
+                                                        <div className="text-lg font-bold text-white/90 ml-4">
+                                                            L$ {parseFloat(item.purchasePrice || 0).toLocaleString()}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Sales & Event Reminders */}
+                                <div className="product-card p-6 mb-6">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                                            <span>🎪</span>
+                                            <span>Sales & Event Reminders</span>
+                                        </h2>
+                                        <button
+                                            onClick={() => setShowReminderForm(!showReminderForm)}
+                                            className="sl-orange-btn py-2 px-4 rounded-lg text-sm"
+                                        >
+                                            {showReminderForm ? '✕ Cancel' : '➕ Add Reminder'}
+                                        </button>
+                                    </div>
+
+                                    {/* Add Reminder Form */}
+                                    {showReminderForm && (
+                                        <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4 mb-4">
+                                            <form onSubmit={(e) => {
+                                                e.preventDefault();
+                                                const formData = new FormData(e.target);
+                                                const reminderData = {
+                                                    title: formData.get('title'),
+                                                    date: formData.get('date'),
+                                                    notes: formData.get('notes'),
+                                                    link: formData.get('link')
+                                                };
+                                                if (editingReminder) {
+                                                    updateReminder(editingReminder.id, reminderData);
+                                                    setEditingReminder(null);
+                                                } else {
+                                                    addReminder(reminderData);
+                                                }
+                                                setShowReminderForm(false);
+                                                e.target.reset();
+                                            }}>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                    <input
+                                                        type="text"
+                                                        name="title"
+                                                        placeholder="Event name (e.g., Gacha Garden, FaMESHed)"
+                                                        required
+                                                        defaultValue={editingReminder?.title}
+                                                        className="input-field"
+                                                    />
+                                                    <input
+                                                        type="date"
+                                                        name="date"
+                                                        required
+                                                        defaultValue={editingReminder?.date}
+                                                        className="input-field"
+                                                    />
+                                                </div>
+                                                <input
+                                                    type="text"
+                                                    name="notes"
+                                                    placeholder="Notes (e.g., 50% off, New releases)"
+                                                    defaultValue={editingReminder?.notes}
+                                                    className="input-field mb-4"
+                                                />
+                                                <input
+                                                    type="url"
+                                                    name="link"
+                                                    placeholder="Link (optional)"
+                                                    defaultValue={editingReminder?.link}
+                                                    className="input-field mb-4"
+                                                />
+                                                <button type="submit" className="sl-orange-btn w-full py-2 rounded-lg">
+                                                    {editingReminder ? '✅ Update Reminder' : '➕ Add Reminder'}
+                                                </button>
+                                            </form>
+                                        </div>
+                                    )}
+
+                                    {/* Reminders List */}
+                                    {getUpcomingReminders().length === 0 ? (
+                                        <div className="text-center py-8 text-white/70">
+                                            <div className="text-5xl mb-3">📅</div>
+                                            <p>No reminders yet. Add one to track upcoming sales & events!</p>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2">
+                                            {getUpcomingReminders().map(reminder => (
+                                                <div 
+                                                    key={reminder.id} 
+                                                    className={`p-4 rounded-lg border-2 ${
+                                                        reminder.isPast ? 'bg-white/5 border-white/10 opacity-50' :
+                                                        reminder.isToday ? 'bg-red-500/20 border-red-500/50' :
+                                                        reminder.isThisWeek ? 'bg-yellow-500/20 border-yellow-500/50' :
+                                                        'bg-white/5 border-white/20'
+                                                    }`}
+                                                >
+                                                    <div className="flex items-start justify-between gap-4">
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <h3 className="font-bold text-lg text-white">{reminder.title}</h3>
+                                                                {reminder.isToday && <span className="text-xs bg-red-500/30 text-red-300 px-2 py-1 rounded border border-red-500/50">🔥 TODAY</span>}
+                                                                {reminder.isThisWeek && !reminder.isToday && <span className="text-xs bg-yellow-500/30 text-yellow-300 px-2 py-1 rounded border border-yellow-500/50">📅 This Week</span>}
+                                                                {reminder.isPast && <span className="text-xs bg-white/10 text-white/50 px-2 py-1 rounded border border-white/20">Past</span>}
+                                                            </div>
+                                                            <p className="text-white/80 text-sm mb-1">
+                                                                📅 {new Date(reminder.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                                                            </p>
+                                                            {reminder.notes && <p className="text-white/70 text-sm mb-2">📝 {reminder.notes}</p>}
+                                                            {reminder.link && (
+                                                                <a href={reminder.link} target="_blank" rel="noopener noreferrer" className="text-sm text-cyan-300 hover:text-cyan-200 underline">
+                                                                    🔗 View Link
+                                                                </a>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex gap-2 flex-shrink-0">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setEditingReminder(reminder);
+                                                                    setShowReminderForm(true);
+                                                                }}
+                                                                className="text-xs py-1 px-2 rounded bg-white/10 hover:bg-white/20 border border-white/20 transition"
+                                                            >
+                                                                ✏️
+                                                            </button>
+                                                            <button
+                                                                onClick={() => deleteReminder(reminder.id)}
+                                                                className="text-xs py-1 px-2 rounded bg-white/10 hover:bg-red-500/30 border border-white/20 transition"
+                                                            >
+                                                                🗑️
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Quick Actions */}
+                                <div className="product-card p-6">
+                                    <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                                        <span>⚡</span>
+                                        <span>Quick Actions</span>
+                                    </h2>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        <button
+                                            onClick={() => setActiveTab('wishlist')}
+                                            className="p-4 rounded-lg bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-2 border-yellow-500/30 hover:border-yellow-500/50 transition text-center"
+                                        >
+                                            <div className="text-3xl mb-2">⭐</div>
+                                            <div className="font-semibold text-white">Wishlist</div>
+                                        </button>
+                                        <button
+                                            onClick={() => setActiveTab('shopping')}
+                                            className="p-4 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border-2 border-blue-500/30 hover:border-blue-500/50 transition text-center"
+                                        >
+                                            <div className="text-3xl mb-2">🛒</div>
+                                            <div className="font-semibold text-white">Shopping</div>
+                                        </button>
+                                        <button
+                                            onClick={() => setActiveTab('inventory')}
+                                            className="p-4 rounded-lg bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-2 border-green-500/30 hover:border-green-500/50 transition text-center"
+                                        >
+                                            <div className="text-3xl mb-2">✅</div>
+                                            <div className="font-semibold text-white">Inventory</div>
+                                        </button>
+                                        <button
+                                            onClick={() => setActiveTab('lists')}
+                                            className="p-4 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-2 border-purple-500/30 hover:border-purple-500/50 transition text-center"
+                                        >
+                                            <div className="text-3xl mb-2">📋</div>
+                                            <div className="font-semibold text-white">Lists</div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Global Search Results */}
                         {globalSearch && showGlobalSearch && (
@@ -2161,6 +2559,16 @@
                                                             {item.status.split(' - ')[0]}
                                                         </span>
                                                     </div>
+                                                    
+                                                    {/* Priority Badge */}
+                                                    {item.priority && getPriorityBadge(item.priority) && (
+                                                        <div className="mb-2">
+                                                            <span className={`text-xs px-2 py-1 rounded border ${getPriorityBadge(item.priority).class}`}>
+                                                                {getPriorityBadge(item.priority).emoji} {getPriorityBadge(item.priority).text}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                    
                                                     {item.store && <p className="text-gray-600 mb-2">🏪 {item.store}</p>}
                                                     {/* Display category-subcategory pairs */}
                                                     {(item.categorySubcategoryPairs && item.categorySubcategoryPairs.length > 0) ? (
@@ -2399,6 +2807,23 @@
                                                     <option key={status} value={status}>{status}</option>
                                                 ))}
                                             </select>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold mb-2 text-gray-700">
+                                                ⭐ Priority (Optional)
+                                            </label>
+                                            <select
+                                                value={formData.priority}
+                                                onChange={(e) => setFormData({...formData, priority: e.target.value})}
+                                                className="w-full input-field"
+                                            >
+                                                <option value="">No Priority</option>
+                                                <option value="high">🔴 High Priority</option>
+                                                <option value="medium">🟡 Medium Priority</option>
+                                                <option value="low">🟢 Low Priority</option>
+                                            </select>
+                                            <p className="text-sm text-gray-500 mt-1">💡 Flag important items to find them faster</p>
                                         </div>
 
                                         {customLists.length > 0 && (
@@ -2714,26 +3139,51 @@
 
                                 {/* Sorting Controls */}
                                 <div className="product-card p-4 mb-6">
-                                    <div className="flex items-center gap-4 flex-wrap">
-                                        <label className="font-semibold text-gray-700">
-                                            🔄 Sort by:
-                                        </label>
-                                        <select
-                                            value={sortBy}
-                                            onChange={(e) => setSortBy(e.target.value)}
-                                            className="input-field flex-1 min-w-[200px]"
+                                    <div className="flex items-center gap-4 flex-wrap justify-between">
+                                        <div className="flex items-center gap-4 flex-wrap flex-1">
+                                            <label className="font-semibold text-gray-700">
+                                                🔄 Sort by:
+                                            </label>
+                                            <select
+                                                value={sortBy}
+                                                onChange={(e) => setSortBy(e.target.value)}
+                                                className="input-field min-w-[200px]"
+                                            >
+                                                <option value="dateAdded">Date Added (Newest First)</option>
+                                                <option value="dateAddedOld">Date Added (Oldest First)</option>
+                                                <option value="alphabetical">Alphabetical (A-Z)</option>
+                                                <option value="alphabeticalReverse">Alphabetical (Z-A)</option>
+                                                <option value="priority">Priority (High to Low)</option>
+                                                {activeTab === 'shopping' && (
+                                                    <>
+                                                        <option value="price">Price (Low to High)</option>
+                                                        <option value="priceHigh">Price (High to Low)</option>
+                                                    </>
+                                                )}
+                                            </select>
+
+                                            <label className="font-semibold text-gray-700 ml-4">
+                                                🎯 Filter:
+                                            </label>
+                                            <select
+                                                value={filterPriority}
+                                                onChange={(e) => setFilterPriority(e.target.value)}
+                                                className="input-field min-w-[180px]"
+                                            >
+                                                <option value="">All Priorities</option>
+                                                <option value="high">🔴 High Only</option>
+                                                <option value="medium">🟡 Medium Only</option>
+                                                <option value="low">🟢 Low Only</option>
+                                            </select>
+                                        </div>
+
+                                        <button
+                                            onClick={() => setCompactView(!compactView)}
+                                            className="sl-blue-btn py-2 px-4 rounded-lg text-sm flex items-center gap-2"
                                         >
-                                            <option value="dateAdded">Date Added (Newest First)</option>
-                                            <option value="dateAddedOld">Date Added (Oldest First)</option>
-                                            <option value="alphabetical">Alphabetical (A-Z)</option>
-                                            <option value="alphabeticalReverse">Alphabetical (Z-A)</option>
-                                            {activeTab === 'shopping' && (
-                                                <>
-                                                    <option value="price">Price (Low to High)</option>
-                                                    <option value="priceHigh">Price (High to Low)</option>
-                                                </>
-                                            )}
-                                        </select>
+                                            <span>{compactView ? '🎴' : '📋'}</span>
+                                            <span>{compactView ? 'Card View' : 'Compact View'}</span>
+                                        </button>
                                     </div>
                                 </div>
 
@@ -2750,8 +3200,10 @@
                                 )}
 
                                 {/* Items List */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {getFilteredItems().map(item => (
+                                {!compactView ? (
+                                    // Card View
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {getFilteredItems().map(item => (
                                         <div key={item.id} className="product-card overflow-hidden item-card" style={{position: 'relative'}}>
                                             {/* Bulk Mode Checkbox */}
                                             {bulkMode && (
@@ -2775,6 +3227,16 @@
                                             )}
                                             <div className="p-4">
                                                 <h3 className="font-bold text-lg mb-2 text-gray-800">{item.name}</h3>
+                                                
+                                                {/* Priority Badge */}
+                                                {item.priority && getPriorityBadge(item.priority) && (
+                                                    <div className="mb-2">
+                                                        <span className={`text-xs px-2 py-1 rounded border ${getPriorityBadge(item.priority).class}`}>
+                                                            {getPriorityBadge(item.priority).emoji} {getPriorityBadge(item.priority).text}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                
                                                 {item.store && (
                                                     <p className="text-gray-600 mb-2 flex items-center gap-1">
                                                         <span>🏪</span>
@@ -2878,6 +3340,75 @@
                                         </div>
                                     ))}
                                 </div>
+                                ) : (
+                                    // Compact List View
+                                    <div className="space-y-2">
+                                        {getFilteredItems().map(item => {
+                                            const priorityBadge = getPriorityBadge(item.priority);
+                                            return (
+                                                <div key={item.id} className="product-card p-3 flex items-center gap-3 hover:bg-white/5 transition" style={{position: 'relative'}}>
+                                                    {bulkMode && (
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedItems.includes(item.id)}
+                                                            onChange={() => toggleItemSelection(item.id)}
+                                                            className="bulk-checkbox flex-shrink-0"
+                                                        />
+                                                    )}
+                                                    
+                                                    {item.image && (
+                                                        <img 
+                                                            src={item.image} 
+                                                            alt={item.name} 
+                                                            className="w-16 h-16 object-contain bg-gray-50 rounded cursor-pointer flex-shrink-0"
+                                                            onClick={() => setLightboxImage(item.image)}
+                                                        />
+                                                    )}
+                                                    
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <h3 className="font-bold text-gray-800 truncate">{item.name}</h3>
+                                                            {priorityBadge && (
+                                                                <span className={`text-xs px-2 py-0.5 rounded border ${priorityBadge.class} flex-shrink-0`}>
+                                                                    {priorityBadge.emoji}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <p className="text-sm text-gray-600 truncate">
+                                                            {item.store && `🏪 ${item.store}`}
+                                                            {item.category && ` • ${getCategoryIcon(item.category)} ${item.category}`}
+                                                            {item.price && activeTab === 'shopping' && ` • 💰 L$ ${parseFloat(item.price).toLocaleString()}`}
+                                                        </p>
+                                                    </div>
+                                                    
+                                                    <div className="flex gap-1 flex-shrink-0">
+                                                        <button
+                                                            onClick={() => editItem(item)}
+                                                            className="text-xs py-1 px-2 rounded bg-white/10 hover:bg-white/20 border border-white/20 transition"
+                                                            title="Edit"
+                                                        >
+                                                            ✏️
+                                                        </button>
+                                                        <button
+                                                            onClick={() => duplicateItem(item)}
+                                                            className="text-xs py-1 px-2 rounded bg-white/10 hover:bg-blue-500/30 border border-white/20 transition"
+                                                            title="Duplicate"
+                                                        >
+                                                            📋
+                                                        </button>
+                                                        <button
+                                                            onClick={() => deleteItem(item.id)}
+                                                            className="text-xs py-1 px-2 rounded bg-white/10 hover:bg-red-500/30 border border-white/20 transition"
+                                                            title="Delete"
+                                                        >
+                                                            🗑️
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
 
                                 {getFilteredItems().length === 0 && (
                                     <div className="empty-state">
@@ -2924,7 +3455,7 @@
                                         className="w-full input-field mb-4 text-lg"
                                     />
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <select
                                             value={filterCategory}
                                             onChange={(e) => setFilterCategory(e.target.value)}
@@ -2949,6 +3480,17 @@
                                                 <option key={creator} value={creator}>{creator}</option>
                                             ))}
                                         </select>
+
+                                        <select
+                                            value={filterPriority}
+                                            onChange={(e) => setFilterPriority(e.target.value)}
+                                            className="input-field"
+                                        >
+                                            <option value="">⭐ All Priorities</option>
+                                            <option value="high">🔴 High Only</option>
+                                            <option value="medium">🟡 Medium Only</option>
+                                            <option value="low">🟢 Low Only</option>
+                                        </select>
                                     </div>
 
                                     <p className="text-center text-white/80 mt-6 font-semibold">
@@ -2970,6 +3512,16 @@
                                             )}
                                             <div className="p-4">
                                                 <h3 className="font-bold text-lg mb-2">{item.name}</h3>
+                                                
+                                                {/* Priority Badge */}
+                                                {item.priority && getPriorityBadge(item.priority) && (
+                                                    <div className="mb-2">
+                                                        <span className={`text-xs px-2 py-1 rounded border ${getPriorityBadge(item.priority).class}`}>
+                                                            {getPriorityBadge(item.priority).emoji} {getPriorityBadge(item.priority).text}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                
                                                 {item.store && <p className="text-gray-600 mb-2">🏪 {item.store}</p>}
                                                 {item.category && (
                                                     <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -3487,6 +4039,20 @@
                                             {Object.values(STATUSES).map(status => (
                                                 <option key={status} value={status}>{status}</option>
                                             ))}
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold mb-2">⭐ Priority</label>
+                                        <select
+                                            value={formData.priority}
+                                            onChange={(e) => setFormData({...formData, priority: e.target.value})}
+                                            className="w-full input-field"
+                                        >
+                                            <option value="">No Priority</option>
+                                            <option value="high">🔴 High Priority</option>
+                                            <option value="medium">🟡 Medium Priority</option>
+                                            <option value="low">🟢 Low Priority</option>
                                         </select>
                                     </div>
 
